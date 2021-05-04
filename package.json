@@ -1,0 +1,38 @@
+{
+  "name": "newleaf-client",
+  "version": "0.1.0",
+  "description": "",
+  "dependencies": {
+    "@types/react": "^16.9.20",
+    "@types/react-dom": "^16.9.5",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "redleaf-rc": "^0.0.1-alpha.3"
+  },
+  "devDependencies": {
+    "@iceworks/spec": "^1.0.0",
+    "build-plugin-antd": "^0.1.1",
+    "eslint": "^6.8.0",
+    "ice.js": "^1.0.0",
+    "stylelint": "^13.7.2"
+  },
+  "scripts": {
+    "dev": "icejs start",
+    "build": "icejs build",
+    "lint": "npm run eslint && npm run stylelint",
+    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
+    "eslint:fix": "npm run eslint -- --fix",
+    "stylelint": "stylelint \"**/*.{css,scss,less}\""
+  },
+  "ideMode": {
+    "name": "ice-react"
+  },
+  "iceworks": {
+    "type": "react",
+    "adapter": "adapter-react-v3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "private": true
+}
