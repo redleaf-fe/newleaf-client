@@ -1,6 +1,6 @@
 {
   "name": "newleaf-client",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "",
   "dependencies": {
     "@types/react": "^16.9.20",
@@ -15,7 +15,9 @@
     "build-plugin-antd": "^0.1.1",
     "eslint": "^6.8.0",
     "ice.js": "^1.0.0",
-    "stylelint": "^13.7.2"
+    "stylelint": "^13.7.2",
+    "conventional-changelog-cli": "^2.1.1",
+    "cz-conventional-changelog": "^3.3.0"
   },
   "scripts": {
     "dev": "icejs start --port 3020",
@@ -23,7 +25,9 @@
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
     "eslint:fix": "npm run eslint -- --fix",
-    "stylelint": "stylelint \"**/*.{css,scss,less}\""
+    "stylelint": "stylelint \"**/*.{css,scss,less}\"",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0",
+    "pretty": "prettier --write middlewares/* models/* routes/* services/* utils/*"
   },
   "ideMode": {
     "name": "ice-react"
@@ -35,5 +39,10 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "private": true
+  "private": true,
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
