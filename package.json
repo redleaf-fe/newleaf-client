@@ -5,9 +5,10 @@
   "dependencies": {
     "@types/react": "^16.9.20",
     "@types/react-dom": "^16.9.5",
+    "axios": "^0.21.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "redleaf-rc": "^0.0.1-alpha.3"
+    "redleaf-rc": "^0.0.1-alpha.4"
   },
   "devDependencies": {
     "@iceworks/spec": "^1.0.0",
@@ -17,7 +18,7 @@
     "stylelint": "^13.7.2"
   },
   "scripts": {
-    "dev": "icejs start",
+    "dev": "icejs start --port 3020",
     "build": "icejs build",
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",

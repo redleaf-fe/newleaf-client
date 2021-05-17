@@ -1,0 +1,15 @@
+{
+  "plugins": [
+    [
+      "build-plugin-antd",
+      {
+        "importOptions": {
+          "libraryName": "redleaf-rc",
+          "libraryDirectory": "dist",
+          "style": false
+        }
+      },
+      "redleaf-rc"
+    ]
+  ]
+}
