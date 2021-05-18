@@ -6,9 +6,12 @@ import Login from '@/pages/Login';
 
 const routerConfig = [
   {
+    path: '/login',
+    component: Login,
+  },
+  {
     path: '/',
     component: Layout,
-    exact: true,
     children: [
       {
         path: '/home',
@@ -19,10 +22,6 @@ const routerConfig = [
         component: Config,
       },
     ],
-  },
-  {
-    path: '/login',
-    component: Login,
   },
 ];
 
