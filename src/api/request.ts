@@ -1,7 +1,7 @@
 import { Message } from 'redleaf-rc';
 import axios from 'axios';
 
-export default function ({ url, method = 'get', data = {} }: { url: string; method: 'get' | 'post'; data: any }) {
+export default function ({ url, method = 'get', data = {} }: { url: string; method?: 'get' | 'post'; data?: any }) {
   return axios({
     url,
     method,
