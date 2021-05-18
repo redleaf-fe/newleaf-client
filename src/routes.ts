@@ -2,7 +2,8 @@ import Layout from '@/components/layout';
 
 import Dashboard from '@/pages/Dashboard';
 import App from '@/pages/App';
-import Config from '@/pages/Config';
+import AppList from '@/pages/App/List';
+import NotFound from '@/pages/NotFound';
 import Login from '@/pages/Login';
 
 export default [
@@ -17,20 +18,17 @@ export default [
       {
         path: 'app',
         component: App,
-        children: [
-          {
-            path: 'list',
-            component: AppList,
-          },
-        ],
+      },
+      {
+        path: 'appList',
+        component: AppList,
       },
       {
         path: 'dashboard',
         component: Dashboard,
       },
       {
-        path: 'config',
-        component: Config,
+        component: NotFound,
       },
     ],
   },
