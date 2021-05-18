@@ -1,11 +1,26 @@
 import React, { useCallback, useState } from 'react';
+import { Menu } from 'redleaf-rc';
+import { useHistory, useLocation } from 'ice';
+
 import './style.less';
 
 export const context = React.createContext({});
 
-const Layout = (props) => {
+const menuData = [
+  { value: 'dashboard', text: '大盘' },
+  { value: 'app', text: '应用管理' },
+  { value: 'config', text: '配置' },
+];
+
+export default (props) => {
+  const history = useHistory();
+  const location = useLocation();
+
+  const [pageTitle, setPageTitle] = useState('');
+
+  // 全局变量
   const [layout, setLayout] = useState({
-    pageTitle: '',
+    userName: '',
   });
 
   const setLayoutVal = useCallback(
@@ -20,16 +35,23 @@ const Layout = (props) => {
   );
 
   return (
-    <context.Provider value={{ setLayoutVal }}>
+    <context.Provider value={{ setLayoutVal, layout }}>
       <div className="page-container">
-        <div className="menu-container">menu</div>
+        <div className="menu-container">
+          <Menu
+            defaultValue={location.pathname.slice(1)}
+            datasets={menuData}
+            onChange={({ meta }) => {
+              history.push(`/${meta.value}`);
+              setPageTitle(meta.text || '');
+            }}
+          />
+        </div>
         <div className="page-content">
-          <div className="page-title">{layout.pageTitle}</div>
+          <div className="page-title">{pageTitle}</div>
           <div className="main">{props.children}</div>
         </div>
       </div>
     </context.Provider>
   );
 };
-
-export default Layout;
