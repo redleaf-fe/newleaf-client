@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { register, login } from '@/api/login';
-import { Form, Input, Button, Message } from 'redleaf-rc';
+import { Form, Input, Button } from 'redleaf-rc';
 
 import './style.less';
 
@@ -11,9 +11,16 @@ const typeMap = {
   register: '注册',
 };
 
-const Login = () => {
+const apiMap = {
+  login,
+  register,
+};
+
+export default () => {
   const [type, setType] = useState('login');
   const formRef = useRef({});
+
+  useEffect(() => {}, []);
 
   return (
     <div className="login-container">
@@ -72,13 +79,7 @@ const Login = () => {
             if (Object.keys(errors).length > 0) {
               return;
             }
-            register(values)
-              .then((res) => {
-                console.log(res);
-              })
-              .catch((err) => {
-                Message.show({ title: err });
-              });
+            apiMap[type](values);
           }}
         >
           {typeMap[type]}
@@ -99,5 +100,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
