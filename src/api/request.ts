@@ -22,7 +22,7 @@ export default function ({ url, method = 'get', data = {} }: { url: string; meth
       if ([301, 302].includes(res.status)) {
         window.location.href = `/#${res.data.redirectUrl}`;
       } else {
-        Message.show({ title: err.response.data.message });
+        throw err.response.data;
       }
     });
 }
