@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { register, login } from '@/api/login';
-import { Form, Input, Button } from 'redleaf-rc';
+import { Form, Input, Button, Message } from 'redleaf-rc';
+import { required, requiredMsg } from '@/utils/validators';
+import { formUnpass } from '@/const';
 
 import './style.less';
-
-const { Item } = Form;
 
 const typeMap = {
   login: '登录',
@@ -20,8 +20,6 @@ export default () => {
   const [type, setType] = useState('login');
   const formRef = useRef({});
 
-  useEffect(() => {}, []);
-
   return (
     <div className="login-container">
       <Form
@@ -31,52 +29,51 @@ export default () => {
         }}
       >
         <div className="title">{typeMap[type]}</div>
-        <Item
+        <Form.Item
           name="userName"
           validators={[
             {
-              rule: ({ value }) => {
-                return !!value;
-              },
-              message: '必填',
+              rule: required,
+              message: requiredMsg,
             },
           ]}
         >
           <Input placeholder="输入用户名" />
-        </Item>
-        <Item
+        </Form.Item>
+        <Form.Item
           name="password"
           validators={[
             {
-              rule: ({ value }) => {
-                return !!value;
-              },
-              message: '必填',
+              rule: required,
+              message: requiredMsg,
             },
           ]}
         >
           <Input type="password" placeholder="输入密码" />
-        </Item>
+        </Form.Item>
         {type === 'register' && (
-          <Item
+          <Form.Item
             name="password2"
             validators={[
               {
-                rule: ({ value }) => {
-                  return !!value;
-                },
-                message: '必填',
+                rule: required,
+                message: requiredMsg,
               },
             ]}
           >
             <Input type="password" placeholder="再次输入密码" />
-          </Item>
+          </Form.Item>
         )}
         <Button
           className="submit"
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
             if (Object.keys(errors).length > 0) {
+              Message.show({ title: formUnpass });
+              return;
+            }
+            if (type === 'register' && values.password !== values.password2) {
+              Message.show({ title: '两次密码输入不一致' });
               return;
             }
             apiMap[type](values);
