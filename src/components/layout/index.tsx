@@ -8,8 +8,7 @@ export const context = React.createContext({});
 
 const menuData = [
   { value: 'dashboard', text: '大盘' },
-  { value: 'app', text: '应用管理' },
-  { value: 'config', text: '配置' },
+  { value: 'app', text: '应用管理', children: [{ value: 'appList', text: '应用列表' }] },
 ];
 
 export default (props) => {
@@ -39,7 +38,7 @@ export default (props) => {
       <div className="page-container">
         <div className="menu-container">
           <Menu
-            defaultValue={location.pathname.slice(1)}
+            // defaultValue={location.pathname.slice(1)}
             datasets={menuData}
             onChange={({ meta }) => {
               history.push(`/${meta.value}`);
