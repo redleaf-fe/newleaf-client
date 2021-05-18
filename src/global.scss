@@ -28,10 +28,34 @@ div {
 
 // 全局
 
+.pointer {
+  cursor: pointer;
+}
+
+.color-primary {
+  color: var(--primary1);
+}
+
+.color-danger {
+  color: var(--danger1);
+}
+
 .vertical-align-top {
   vertical-align: top;
 }
 
+.mr8 {
+  margin-right: 8px;
+}
+
+.ml8 {
+  margin-left: 8px;
+}
+
 .mr16 {
   margin-right: 16px;
+}
+
+.mb16 {
+  margin-bottom: 16px;
 }
