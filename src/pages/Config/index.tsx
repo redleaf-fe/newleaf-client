@@ -1,40 +1,42 @@
-import React, { useReducer, useEffect } from 'react';
-import { getTables } from '@/api/config';
-import { Form, Input, Button } from 'redleaf-rc';
+import React, { useState, useEffect } from 'react';
+import { Message, ConfigProvider } from 'redleaf-rc';
+import { getDatabaseConfig } from '@/api/config';
+import LabelContent from '@/components/labelContent';
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'change-port':
-      return { ...state, port: action.value };
-    default:
-      return state;
-  }
-};
+import './style.less';
 
 const Config = () => {
-  const [state, dispatch] = useReducer(reducer, {
-    port: '3306',
-  });
+  const [config, setConfig] = useState({});
 
   useEffect(() => {
-    // getTables();
+    getDatabaseConfig()
+      .then((res) => setConfig(res?.data || {}))
+      .catch((e) => Message.show({ title: String(e) }));
   }, []);
 
   return (
-    <div>
-      <div>
-        <h3>数据库配置</h3>
-        <Input
-          value={state.port}
-          placeholder="输入端口号"
-          onChange={({ value }) => {
-            dispatch({ type: 'change-port', value });
-          }}
-        />
+    <ConfigProvider.Consumer>
+      {(val) => {
+        val.setGlobal({ key: 'pageTitle', value: '数据库配置' });
 
-        <Button onChange={() => {}}>确认</Button>
-      </div>
-    </div>
+        return (
+          <div className="config-container">
+            <LabelContent
+              items={[
+                {
+                  label: '数据库名称：',
+                  value: config?.database,
+                },
+                {
+                  label: '数据库端口号：',
+                  value: config?.port,
+                },
+              ]}
+            />
+          </div>
+        );
+      }}
+    </ConfigProvider.Consumer>
   );
 };
 
