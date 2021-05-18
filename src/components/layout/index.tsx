@@ -1,33 +1,34 @@
 import React, { useCallback, useState } from 'react';
-import { ConfigProvider } from 'redleaf-rc';
 import './style.less';
 
+export const context = React.createContext({});
+
 const Layout = (props) => {
-  const [global, setGlobal] = useState({
+  const [layout, setLayout] = useState({
     pageTitle: '',
   });
 
-  const setGlobalVal = useCallback(
+  const setLayoutVal = useCallback(
     ({ key, value }) => {
-      if (global[key] !== value) {
-        const obj = Object.assign({}, global);
+      if (layout[key] !== value) {
+        const obj = Object.assign({}, layout);
         obj[key] = value;
-        setGlobal(obj);
+        setLayout(obj);
       }
     },
-    [global],
+    [layout],
   );
 
   return (
-    <ConfigProvider.Provider setGlobal={setGlobalVal}>
+    <context.Provider value={{ setLayoutVal }}>
       <div className="page-container">
         <div className="menu-container">menu</div>
         <div className="page-content">
-          <div className="page-title">{global.pageTitle}</div>
+          <div className="page-title">{layout.pageTitle}</div>
           <div className="main">{props.children}</div>
         </div>
       </div>
-    </ConfigProvider.Provider>
+    </context.Provider>
   );
 };
 
