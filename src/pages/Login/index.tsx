@@ -76,7 +76,9 @@ export default () => {
               Message.show({ title: '两次密码输入不一致' });
               return;
             }
-            apiMap[type](values);
+            apiMap[type](values).catch((e) => {
+              Message.show({ title: e.message });
+            });
           }}
         >
           {typeMap[type]}
