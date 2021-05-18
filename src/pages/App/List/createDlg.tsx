@@ -5,16 +5,14 @@ import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
 export default (props) => {
-  const { close } = props;
+  const { closeDlg, getList } = props;
   const formRef = useRef();
 
-  const getAppList = useCallback(() => {
-    getAppList().then((res) => {
-      setDatasets(res);
-    });
-  }, []);
+  // const getAppDetail = useCallback(() => {
+  //   appDetail().then((res) => {});
+  // }, []);
 
-  useEffect(getAppList, [getAppList]);
+  // useEffect(getAppDetail, [getAppDetail]);
 
   return (
     <Form
@@ -25,7 +23,7 @@ export default (props) => {
     >
       <Form.Item
         label="应用名称："
-        name="name"
+        name="appName"
         showRequiredMark
         validators={[
           {
@@ -61,7 +59,15 @@ export default (props) => {
               Message.show({ title: formUnpass });
               return;
             }
-            saveApp(values).then(getAppList);
+            saveApp(values)
+              .then(() => {
+                closeDlg?.();
+                getList?.();
+                Message.show({ title: '创建成功' });
+              })
+              .catch((e) => {
+                Message.show({ title: e.message });
+              });
           }}
         >
           确定
@@ -69,7 +75,7 @@ export default (props) => {
         <Button
           type="default"
           onClick={() => {
-            close?.();
+            closeDlg?.();
           }}
         >
           取消
