@@ -1,10 +1,11 @@
 import Layout from '@/components/layout';
 
-import Home from '@/pages/Home';
+import Dashboard from '@/pages/Dashboard';
+import App from '@/pages/App';
 import Config from '@/pages/Config';
 import Login from '@/pages/Login';
 
-const routerConfig = [
+export default [
   {
     path: '/login',
     component: Login,
@@ -14,15 +15,23 @@ const routerConfig = [
     component: Layout,
     children: [
       {
-        path: '/home',
-        component: Home,
+        path: 'app',
+        component: App,
+        children: [
+          {
+            path: 'list',
+            component: AppList,
+          },
+        ],
       },
       {
-        path: '/config',
+        path: 'dashboard',
+        component: Dashboard,
+      },
+      {
+        path: 'config',
         component: Config,
       },
     ],
   },
 ];
-
-export default routerConfig;
