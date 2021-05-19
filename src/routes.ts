@@ -1,10 +1,16 @@
+// import { lazy } from 'ice';
+
 import Layout from '@/components/layout';
 
-import Dashboard from '@/pages/Dashboard';
+// 直接加载
+import Login from '@/pages/Login';
 import App from '@/pages/App';
 import AppList from '@/pages/App/List';
 import NotFound from '@/pages/NotFound';
-import Login from '@/pages/Login';
+// 懒加载
+// const Dashboard = lazy(() => import(/* webpackChunkName: "Dashboard" */ '@/pages/Dashboard'));
+import Dashboard from '@/pages/Dashboard';
+import ScriptGenerate from '@/pages/ScriptGenerate';
 
 export default [
   {
@@ -22,6 +28,10 @@ export default [
       {
         path: 'appList',
         component: AppList,
+      },
+      {
+        path: 'scriptGenerate',
+        component: ScriptGenerate,
       },
       {
         path: 'dashboard',
