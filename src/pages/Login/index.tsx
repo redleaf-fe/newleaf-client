@@ -11,6 +11,11 @@ const typeMap = {
   register: '注册',
 };
 
+const typeMapReverse = {
+  login: 'register',
+  register: 'login',
+};
+
 const apiMap = {
   login,
   register,
@@ -84,16 +89,13 @@ export default () => {
           {typeMap[type]}
         </Button>
         <div className="bottom">
-          {type === 'login' && (
-            <span
-              className="register"
-              onClick={() => {
-                setType('register');
-              }}
-            >
-              立即注册
-            </span>
-          )}
+          <span
+            onClick={() => {
+              setType(typeMapReverse[type]);
+            }}
+          >
+            立即{typeMap[typeMapReverse[type]]}
+          </span>
         </div>
       </Form>
     </div>
