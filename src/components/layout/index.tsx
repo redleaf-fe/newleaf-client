@@ -8,7 +8,12 @@ export const context = React.createContext({});
 
 const menuData = [
   { value: 'dashboard', text: '大盘' },
-  { value: 'app', text: '应用管理', children: [{ value: 'appList', text: '应用列表' }] },
+  {
+    value: 'app',
+    text: '应用管理',
+    children: [{ value: 'appList', text: '应用列表' }],
+  },
+  { value: 'scriptGenerate', text: '脚本生成' },
 ];
 
 export default (props) => {
