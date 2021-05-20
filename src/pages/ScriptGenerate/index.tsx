@@ -1,12 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Form, Input, Button, Check, Message } from 'redleaf-rc';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
+
+import { defines, body, utils } from './templates';
+import jsmin from './jsmin';
 
 import './style.less';
 
 export default () => {
   const formRef = useRef({});
+  const [code, setCode] = useState('');
 
   return (
     <div className="script-container">
@@ -18,7 +22,7 @@ export default () => {
       >
         <Form.Item
           label="日志上报地址："
-          name="url"
+          name="logUrl"
           showRequiredMark
           validators={[
             {
@@ -53,14 +57,17 @@ export default () => {
               Message.show({ title: formUnpass });
               return;
             }
-            console.log(values);
+
+            const { appId, logUrl } = values;
+            setCode(jsmin(`(function(window){
+              ${defines}${body({ appId, logUrl })}${utils}}(window));`));
           }}
         >
           确定
         </Button>
       </Form>
       <div>
-        <Input type="textarea" rows={20} className="script-area" />
+        <Input type="textarea" rows={20} className="script-area" value={code} />
       </div>
     </div>
   );
