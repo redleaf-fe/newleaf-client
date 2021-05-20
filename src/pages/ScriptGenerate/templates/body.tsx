@@ -18,7 +18,11 @@ Newleaf.prototype.log = function ({ content = '', method, logUrl }) {
   // 有内容才发送
   if (content) {
     method = method || this.defaultSend;
-    logMethod[method](logUrl, content);
+    if (method === 'sendBeacon') {
+      navigator.sendBeacon(logUrl, content);
+    } else {
+      logMethod[method](logUrl, content);
+    }
   }
 };
 

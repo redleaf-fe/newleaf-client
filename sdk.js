@@ -1,10 +1,12 @@
 (function (window, undefined) {
+  // defines
   const logMethod = {
     xhr: sendXhr,
     img: sendImg,
     sendBeacon: navigator.sendBeacon,
   };
 
+  // body
   function Newleaf() {
     this.appId = '123';
     this.logUrl = '/log';
@@ -23,7 +25,11 @@
     // 有内容才发送
     if (content) {
       method = method || this.defaultSend;
-      logMethod[method](logUrl, content);
+      if (method === 'sendBeacon') {
+        navigator.sendBeacon(logUrl, content);
+      } else {
+        logMethod[method](logUrl, content);
+      }
     }
   };
 
@@ -33,7 +39,7 @@
     window.newleaf = new Newleaf();
   }
 
-  // 工具方法
+  // utils
   function sendXhr(url, data) {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
