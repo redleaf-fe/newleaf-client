@@ -1,8 +1,8 @@
 export default function ({ appId, logUrl }) {
   return `
 function Newleaf() {
-  this.appId = '${appId}';
-  this.logUrl = '${logUrl}';
+  this.appId = '123';
+  this.logUrl = '/log';
   if (navigator.sendBeacon) {
     this.defaultSend = 'sendBeacon';
   } else {
@@ -18,11 +18,10 @@ Newleaf.prototype.log = function ({ content = '', method, logUrl }) {
   // 有内容才发送
   if (content) {
     method = method || this.defaultSend;
-    if (method === 'sendBeacon') {
-      navigator.sendBeacon(logUrl, content);
-    } else {
-      logMethod[method](logUrl, content);
-    }
+    logMethod[method](logUrl, {
+      appId: this.appId,
+      content,
+    });
   }
 };
 
