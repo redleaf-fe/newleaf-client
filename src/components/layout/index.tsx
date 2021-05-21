@@ -43,7 +43,7 @@ export default (props) => {
       <div className="page-container">
         <div className="menu-container">
           <Menu
-            // defaultValue={location.pathname.slice(1)}
+            defaultValue={location.pathname.slice(1)}
             datasets={menuData}
             onChange={({ meta }) => {
               history.push(`/${meta.value}`);
