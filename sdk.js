@@ -3,7 +3,7 @@
   const logMethod = {
     xhr: sendXhr,
     img: sendImg,
-    sendBeacon: navigator.sendBeacon,
+    sendBeacon: navigator.sendBeacon.bind(navigator),
   };
 
   // body
@@ -25,16 +25,15 @@
     // 有内容才发送
     if (content) {
       method = method || this.defaultSend;
-      if (method === 'sendBeacon') {
-        navigator.sendBeacon(logUrl, content);
-      } else {
-        logMethod[method](logUrl, content);
-      }
+      logMethod[method](logUrl, {
+        appId: this.appId,
+        content,
+      });
     }
   };
 
   if (window.newleaf) {
-    throw new Error('variable name `newleaf` has existed');
+    throw new Error('variable name \`newleaf\` has existed');
   } else {
     window.newleaf = new Newleaf();
   }
