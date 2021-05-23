@@ -3,8 +3,8 @@ export default `
 function sendXhr(url, data) {
   const xhr = new XMLHttpRequest();
   xhr.open('POST', url);
-  xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
-  xhr.send(data);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify(data));
 }
 
 function sendImg(url, data) {
