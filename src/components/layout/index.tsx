@@ -42,6 +42,7 @@ export default (props) => {
     <context.Provider value={{ setLayoutVal, layout }}>
       <div className="page-container">
         <div className="menu-container">
+          <div className="title">newleaf</div>
           <Menu
             defaultValue={location.pathname.slice(1)}
             datasets={menuData}
