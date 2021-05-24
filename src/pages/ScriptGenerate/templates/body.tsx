@@ -1,20 +1,16 @@
 export default function ({ appId, logUrl }) {
   return `
 function Newleaf() {
-  this.appId = '123';
-  this.logUrl = '/log';
+  this.appId = '${appId}';
+  this.logUrl = '${logUrl}';
   if (navigator.sendBeacon) {
-    this.method = 'sendBeacon';
+    this.method = 'beacon';
   } else {
     this.method = 'img';
   }
 }
 
 Newleaf.prototype.log = function ({ content = '', method, logUrl, appId }) {
-  // content如果不是字符串，进行转换
-  if (typeof content !== 'string') {
-    content = String(content);
-  }
   // 有内容才发送
   if (content) {
     logMethod[method || this.method](logUrl || this.logUrl, {
