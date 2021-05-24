@@ -6,6 +6,7 @@ import Layout from '@/components/layout';
 import Login from '@/pages/Login';
 import App from '@/pages/App';
 import AppList from '@/pages/App/List';
+import Log from '@/pages/Log';
 import NotFound from '@/pages/NotFound';
 // 懒加载
 // const Dashboard = lazy(() => import(/* webpackChunkName: "Dashboard" */ '@/pages/Dashboard'));
@@ -32,6 +33,10 @@ export default [
       {
         path: 'scriptGenerate',
         component: ScriptGenerate,
+      },
+      {
+        path: 'log',
+        component: Log,
       },
       {
         path: 'dashboard',
