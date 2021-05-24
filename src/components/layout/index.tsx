@@ -14,6 +14,7 @@ const menuData = [
     children: [{ value: 'appList', text: '应用列表' }],
   },
   { value: 'scriptGenerate', text: '脚本生成' },
+  { value: 'log', text: '日志' },
 ];
 
 export default (props) => {
