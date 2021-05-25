@@ -7,9 +7,10 @@ export default function ({ url, method = 'get', data = {} }: { url: string; meth
     method,
     headers: { 'Content-Type': 'application/json' },
     // window.location.host
-    // http://localhost:3011
-    baseURL: 'http://localhost:3011',
+    // http://localhost:3012
+    baseURL: 'http://localhost:3012',
     data,
+    params: data,
   })
     .then((res) => {
       if (res.status === 200 && res.statusText === 'OK') {
