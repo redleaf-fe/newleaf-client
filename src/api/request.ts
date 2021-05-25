@@ -5,7 +5,7 @@ export default function ({ url, method = 'get', data = {} }: { url: string; meth
   return axios({
     url,
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': method === 'post' ? 'application/json' : 'text/plain' },
     // window.location.host
     // http://localhost:3012
     baseURL: 'http://localhost:3012',
