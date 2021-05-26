@@ -1,9 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAppList } from '@/api/app';
 import { getLog } from '@/api/log';
-import { Form, Pagination, DateTime, Select, Button, Message } from 'redleaf-rc';
+import { Form, Select, Button, Message, DateTime } from 'redleaf-rc';
+import DatetimeRange from '@/components/datetimeRange';
+import Pagination from '@/components/pagination';
 
 import './style.less';
+
+const detailArr = [
+  { title: '时间：', key: 'time' },
+  { title: 'IP：', key: 'ip' },
+  { title: 'UA：', key: 'ua' },
+  { title: 'referer：', key: 'referer' },
+  { title: '内容：', key: 'content' },
+];
 
 export default () => {
   const [appList, setAppList] = useState([]);
@@ -20,7 +30,15 @@ export default () => {
   const formRef = useRef({});
 
   const fetchLog = useCallback(({ appName, currentPage, datetime }) => {
-    getLog({ appName, currentPage, datetime })
+    const { startTime, endTime } = datetime || {};
+    const param = { appName, currentPage, startTime, endTime };
+    if (startTime) {
+      param.startTime = new Date(startTime).getTime();
+    }
+    if (endTime) {
+      param.endTime = new Date(endTime).getTime();
+    }
+    getLog(param)
       .then((res2) => {
         const { count, rows } = res2;
         setPageData({
@@ -47,6 +65,14 @@ export default () => {
       });
   }, []);
 
+  const changePage = useCallback(
+    ({ page }) => {
+      fetchLog({ ...fetchQuery, currentPage: page });
+      setFetchQuery((t) => ({ ...t, currentPage: page }));
+    },
+    [fetchQuery, fetchLog],
+  );
+
   return (
     <div className="log-container">
       {appList.length > 0 && (
@@ -62,28 +88,57 @@ export default () => {
             <Select options={appList} />
           </Form.Item>
           <Form.Item name="datetime" label="时间：">
-            <DateTime />
+            <DatetimeRange />
           </Form.Item>
           <Button
             className="submit"
             onClick={() => {
               const { values } = formRef.current.getValues();
               const { appName, datetime } = values || {};
-              fetchLog({ ...fetchQuery, appName: appName[0], datetime });
-              setFetchQuery((t) => ({ ...t, appName: appName[0], datetime }));
+              fetchLog({ ...fetchQuery, appName: appName[0], datetime, currentPage: 1 });
+              setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, currentPage: 1 }));
             }}
           >
             搜索
           </Button>
         </Form>
       )}
-      <Pagination
-        totalItems={pageData.totalItems}
-        onChange={({ page }) => {
-          fetchLog({ ...fetchQuery, currentPage: page });
-          setFetchQuery((t) => ({ ...t, currentPage: page }));
-        }}
-      />
+      <div className="page">
+        <Pagination
+          totalItems={pageData.totalItems}
+          type="complex"
+          currentPage={fetchQuery.currentPage}
+          onChange={changePage}
+        />
+      </div>
+
+      <div>
+        {(pageData.data || []).map((v, k) => {
+          return (
+            <div key={k} className="detail">
+              {detailArr.map((vv, kk) => {
+                return (
+                  <p key={kk}>
+                    <span className="title">{vv.title}</span>
+                    <span className="content">
+                      {vv.key === 'time' ? DateTime.dayjs(+v[vv.key]).format('YYYY-MM-DD HH:mm:ss') : v[vv.key]}
+                    </span>
+                  </p>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="page">
+        <Pagination
+          totalItems={pageData.totalItems}
+          type="complex"
+          currentPage={fetchQuery.currentPage}
+          onChange={changePage}
+        />
+      </div>
     </div>
   );
 };
