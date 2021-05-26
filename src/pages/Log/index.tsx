@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAppList } from '@/api/app';
 import { getLog } from '@/api/log';
-import { Form, Select, Button, Message, DateTime } from 'redleaf-rc';
+import { Form, Select, Button, Message, DateTime, Input } from 'redleaf-rc';
 import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 
@@ -21,6 +21,7 @@ export default () => {
     appName: '',
     currentPage: 1,
     datetime: '',
+    like: '',
   });
   const [pageData, setPageData] = useState({
     totalItems: 0,
@@ -29,14 +30,17 @@ export default () => {
 
   const formRef = useRef({});
 
-  const fetchLog = useCallback(({ appName, currentPage, datetime }) => {
+  const fetchLog = useCallback(({ appName, currentPage, datetime, like }) => {
     const { startTime, endTime } = datetime || {};
-    const param = { appName, currentPage, startTime, endTime };
+    const param = { appName, currentPage };
     if (startTime) {
       param.startTime = new Date(startTime).getTime();
     }
     if (endTime) {
       param.endTime = new Date(endTime).getTime();
+    }
+    if (like) {
+      param.like = like;
     }
     getLog(param)
       .then((res2) => {
@@ -90,17 +94,22 @@ export default () => {
           <Form.Item name="datetime" label="时间：">
             <DatetimeRange />
           </Form.Item>
-          <Button
-            className="submit"
-            onClick={() => {
-              const { values } = formRef.current.getValues();
-              const { appName, datetime } = values || {};
-              fetchLog({ ...fetchQuery, appName: appName[0], datetime, currentPage: 1 });
-              setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, currentPage: 1 }));
-            }}
-          >
-            搜索
-          </Button>
+          <div>
+            <Form.Item name="like" label="内容搜索：">
+              <Input maxLength={50} showCount />
+            </Form.Item>
+            <Button
+              className="submit"
+              onClick={() => {
+                const { values } = formRef.current.getValues();
+                const { appName, datetime, like } = values || {};
+                fetchLog({ ...fetchQuery, appName: appName[0], datetime, like, currentPage: 1 });
+                setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, like, currentPage: 1 }));
+              }}
+            >
+              搜索
+            </Button>
+          </div>
         </Form>
       )}
       <div className="page">
@@ -112,23 +121,27 @@ export default () => {
         />
       </div>
 
-      <div>
-        {(pageData.data || []).map((v, k) => {
-          return (
-            <div key={k} className="detail">
-              {detailArr.map((vv, kk) => {
-                return (
-                  <p key={kk}>
-                    <span className="title">{vv.title}</span>
-                    <span className="content">
-                      {vv.key === 'time' ? DateTime.dayjs(+v[vv.key]).format('YYYY-MM-DD HH:mm:ss') : v[vv.key]}
-                    </span>
-                  </p>
-                );
-              })}
-            </div>
-          );
-        })}
+      <div className="detail-container">
+        {pageData.data.length > 0 ? (
+          pageData.data.map((v, k) => {
+            return (
+              <div key={k} className="detail">
+                {detailArr.map((vv, kk) => {
+                  return (
+                    <p key={kk}>
+                      <span className="title">{vv.title}</span>
+                      <span className="content">
+                        {vv.key === 'time' ? DateTime.dayjs(+v[vv.key]).format('YYYY-MM-DD HH:mm:ss') : v[vv.key]}
+                      </span>
+                    </p>
+                  );
+                })}
+              </div>
+            );
+          })
+        ) : (
+          <span className="">暂无数据</span>
+        )}
       </div>
 
       <div className="page">
