@@ -19,6 +19,9 @@ export default () => {
         getInstance={(i) => {
           formRef.current = i;
         }}
+        defaultValue={{
+          logUrl: 'http://localhost:3013/log',
+        }}
       >
         <Form.Item
           label="日志上报地址："
@@ -46,8 +49,12 @@ export default () => {
         >
           <Input placeholder="输入appId" />
         </Form.Item>
-        <Form.Item label="错误处理日志：" name="errorHandle">
+        <Form.Item label="缓存名称：" name="lcName">
+          <Input placeholder="输入缓存名称" />
+        </Form.Item>
+        <Form.Item label="全局错误处理：" name="errorHandle">
           <Check options={[{ value: '', text: '' }]} shape="rect" />
+          <span>全局错误处理包括监听window的error事件、unhandledrejection事件，</span>
         </Form.Item>
         <Button
           className="submit"
@@ -58,9 +65,11 @@ export default () => {
               return;
             }
 
-            const { appId, logUrl } = values;
-            setCode(jsmin(`(function(window){
-              ${defines}${body({ appId, logUrl })}${utils}}(window));`));
+            const { appId, logUrl, lcName = '' } = values;
+            setCode(
+              jsmin(`(function(window){
+              ${defines({ lcName })}${body({ appId, logUrl })}${utils}}(window));`),
+            );
           }}
         >
           确定
