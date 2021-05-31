@@ -40,13 +40,6 @@ export default (props) => {
       <Form.Item
         label="仓库地址："
         name="git"
-        showRequiredMark
-        validators={[
-          {
-            rule: required,
-            message: requiredMsg,
-          },
-        ]}
       >
         <Input type="textarea" rows={5} maxLength={200} showCount />
       </Form.Item>
