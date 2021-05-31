@@ -8,7 +8,7 @@
     "axios": "^0.21.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "redleaf-rc": "^0.0.1-alpha.6"
+    "redleaf-rc": "^0.0.1-alpha.7"
   },
   "devDependencies": {
     "@iceworks/spec": "^1.0.0",
