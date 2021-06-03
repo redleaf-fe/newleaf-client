@@ -33,10 +33,17 @@
     }
   }
 
-  Newleaf.prototype.log = function ({ type = 'log', content = '', method, logUrl, appId }) {
+  Newleaf.prototype.log = function ({ type = 'log', content = '', method, logUrl, appId, cache = true }) {
     // 有内容才发送
     if (content) {
-      logMethod[method || this.method](logUrl || this.logUrl, {
+      // 默认缓存再发送
+      cache ? save({
+        method: method || this.method,
+        logUrl: logUrl || this.logUrl,
+        appId: appId || this.appId,
+        content,
+        type
+      }) : logMethod[method || this.method](logUrl || this.logUrl, {
         appId: appId || this.appId,
         content,
         type
@@ -52,7 +59,9 @@
 
   // utils
   function save(info) {
-    lc.setItem(lcName, JSON.stringify(info));
+    const data = JSON.parse(lc.getItem(lcName) || '[]');
+    data.push(info);
+    lc.setItem(lcName, JSON.stringify(data));
   }
 
   function sendBeacon(url, data) {
@@ -70,5 +79,33 @@
     const img = new Image();
     img.src = \`\${url}?\${new URLSearchParams(data).toString()}\`
   }
+
+  function getRandTime() {
+    return 5 + Math.floor(Math.random() * 10);
+  }
+
+  function send() {
+    let cnt = 0;
+
+    function sendData() {
+      const data = JSON.parse(lc.getItem(lcName) || '[]');
+      const info = data.pop();
+      if (info) {
+        logMethod[info.method](info.logUrl, info);
+      }
+      lc.setItem(lcName, JSON.stringify(data));
+      cnt++;
+
+      if (cnt >= 4) {
+        setTimeout(send, getRandTime());
+      } else {
+        setTimeout(sendData, 800);
+      }
+    }
+
+    setTimeout(sendData, 800);
+  }
+
+  setTimeout(send, getRandTime());
 
 })(window);
