@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { Component } from 'react';
 import { Menu } from 'redleaf-rc';
-import { useHistory, useLocation } from 'ice';
 
 import './style.less';
 
@@ -17,47 +16,53 @@ const menuData = [
   { value: 'log', text: '日志' },
 ];
 
-export default (props) => {
-  const history = useHistory();
-  const location = useLocation();
+export default class Layout extends Component {
 
-  const [pageTitle, setPageTitle] = useState('');
+  componentDidCatch(error, errorInfo) {
+    console.log(error, errorInfo);
+  }
 
-  // 全局变量
-  const [layout, setLayout] = useState({
-    userName: '',
-  });
-
-  const setLayoutVal = useCallback(
-    ({ key, value }) => {
-      if (layout[key] !== value) {
-        const obj = Object.assign({}, layout);
-        obj[key] = value;
-        setLayout(obj);
-      }
+  state = {
+    pageTitle: '',
+    layout: {
+      userName: '',
     },
-    [layout],
-  );
+  };
 
-  return (
-    <context.Provider value={{ setLayoutVal, layout }}>
-      <div className="page-container">
-        <div className="menu-container">
-          <div className="title">newleaf</div>
-          <Menu
-            defaultValue={location.pathname.slice(1)}
-            datasets={menuData}
-            onChange={({ meta }) => {
-              history.push(`/${meta.value}`);
-              setPageTitle(meta.text || '');
-            }}
-          />
+  setLayoutVal = ({ key, value }) => {
+    if (this.state.layout[key] !== value) {
+      const obj = Object.assign({}, this.state.layout);
+      obj[key] = value;
+      this.setState({
+        layout: obj,
+      });
+    }
+  };
+
+  render() {
+    const { pageTitle, layout } = this.state;
+    const { location, history, children } = this.props;
+
+    return (
+      <context.Provider value={{ setLayoutVal: this.setLayoutVal, layout }}>
+        <div className="page-container">
+          <div className="menu-container">
+            <div className="title">newleaf</div>
+            <Menu
+              defaultValue={location.pathname.slice(1)}
+              datasets={menuData}
+              onChange={({ meta }) => {
+                history.push(`/${meta.value}`);
+                this.setState({ pageTitle: meta.text || '' });
+              }}
+            />
+          </div>
+          <div className="page-content">
+            <div className="page-title">{pageTitle}</div>
+            <div className="main">{children}</div>
+          </div>
         </div>
-        <div className="page-content">
-          <div className="page-title">{pageTitle}</div>
-          <div className="main">{props.children}</div>
-        </div>
-      </div>
-    </context.Provider>
-  );
-};
+      </context.Provider>
+    );
+  }
+}
