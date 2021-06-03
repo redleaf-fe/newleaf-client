@@ -21,6 +21,9 @@ export default () => {
         }}
         defaultValue={{
           logUrl: 'http://localhost:3013/log',
+          lcName: '__newleaf_log_cache__',
+          lcTimeBase: 5,
+          lcTimeFloat: 5,
         }}
       >
         <Form.Item
@@ -49,9 +52,48 @@ export default () => {
         >
           <Input placeholder="输入appId" />
         </Form.Item>
-        <Form.Item label="缓存名称：" name="lcName">
+        {/* 缓存 */}
+        <Form.Item
+          label="缓存名称："
+          name="lcName"
+          showRequiredMark
+          validators={[
+            {
+              rule: required,
+              message: requiredMsg,
+            },
+          ]}
+        >
           <Input placeholder="输入缓存名称" />
         </Form.Item>
+        <Form.Item
+          label="缓存基准时间："
+          name="lcTimeBase"
+          showRequiredMark
+          validators={[
+            {
+              rule: required,
+              message: requiredMsg,
+            },
+          ]}
+        >
+          <Input type="int" placeholder="输入缓存基准时间" />
+          <span className="ml8">缓存时间的计算方法：缓存基准时间 + 取最小整数(0~1随机数 * 缓存浮动时间)</span>
+        </Form.Item>
+        <Form.Item
+          label="缓存浮动时间："
+          name="lcTimeFloat"
+          showRequiredMark
+          validators={[
+            {
+              rule: required,
+              message: requiredMsg,
+            },
+          ]}
+        >
+          <Input type="int" placeholder="输入缓存浮动时间" />
+        </Form.Item>
+        {/* 错误处理 */}
         <Form.Item label="全局错误处理：" name="errorHandle">
           <Check options={[{ value: '', text: '' }]} shape="rect" />
           <span>全局错误处理包括监听window的error事件、unhandledrejection事件，</span>
@@ -65,10 +107,10 @@ export default () => {
               return;
             }
 
-            const { appId, logUrl, lcName = '' } = values;
+            const { appId, logUrl, lcName = '', lcTimeBase = 5, lcTimeFloat = 5 } = values;
             setCode(
               jsmin(`(function(window){
-              ${defines({ lcName })}${body({ appId, logUrl })}${utils}}(window));`),
+              ${defines({ lcName })}${body({ appId, logUrl })}${utils({ lcTimeBase, lcTimeFloat })}}(window));`),
             );
           }}
         >
