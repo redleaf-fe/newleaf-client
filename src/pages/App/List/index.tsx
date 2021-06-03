@@ -50,6 +50,8 @@ export default () => {
                 onClick={() => {
                   appDetail({ id: meta.id })
                     .then((res) => {
+                      res.desc = res.desc || '';
+                      res.git = res.git || '';
                       dlgRef.current = Dialog.show({
                         content: <CreateDlg {...{ closeDlg, getList, info: res }} />,
                         title: '编辑应用',

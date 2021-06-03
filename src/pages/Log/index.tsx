@@ -96,7 +96,7 @@ export default () => {
           </Form.Item>
           <div>
             <Form.Item name="like" label="内容搜索：">
-              <Input maxLength={50} showCount />
+              <Input maxLength={50} />
             </Form.Item>
             <Button
               className="submit"
