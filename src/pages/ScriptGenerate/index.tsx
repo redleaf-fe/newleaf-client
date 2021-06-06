@@ -3,7 +3,7 @@ import { Form, Input, Button, Check, Message } from 'redleaf-rc';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
-import { defines, body, utils } from './templates';
+import { defines, body, utils, events } from './templates';
 import jsmin from './jsmin';
 
 import './style.less';
@@ -22,8 +22,8 @@ export default () => {
         defaultValue={{
           logUrl: 'http://localhost:3013/log',
           lcName: '__newleaf_log_cache__',
-          lcTimeBase: 5,
-          lcTimeFloat: 5,
+          lcTimeBase: '5',
+          lcTimeFloat: '5',
         }}
       >
         <Form.Item
@@ -96,7 +96,7 @@ export default () => {
         {/* 错误处理 */}
         <Form.Item label="全局错误处理：" name="errorHandle">
           <Check options={[{ value: '', text: '' }]} shape="rect" />
-          <span>全局错误处理包括监听window的error事件、unhandledrejection事件，</span>
+          <span>全局错误处理包括监听window的error事件、unhandledrejection事件</span>
         </Form.Item>
         <Button
           className="submit"
@@ -107,10 +107,13 @@ export default () => {
               return;
             }
 
-            const { appId, logUrl, lcName = '', lcTimeBase = 5, lcTimeFloat = 5 } = values;
+            const { appId, logUrl, errorHandle = [], lcName = '', lcTimeBase = '5', lcTimeFloat = '5' } = values;
             setCode(
               jsmin(`(function(window){
-              ${defines({ lcName })}${body({ appId, logUrl })}${utils({ lcTimeBase, lcTimeFloat })}}(window));`),
+              ${defines({ lcName })}${errorHandle.length > 0 ? events() : ''}${body({ appId, logUrl })}${utils({
+                lcTimeBase,
+                lcTimeFloat,
+              })}}(window));`),
             );
           }}
         >
