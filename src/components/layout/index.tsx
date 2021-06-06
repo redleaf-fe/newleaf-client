@@ -7,17 +7,12 @@ export const context = React.createContext({});
 
 const menuData = [
   { value: 'dashboard', text: '大盘' },
-  {
-    value: 'app',
-    text: '应用管理',
-    children: [{ value: 'appList', text: '应用列表' }],
-  },
-  { value: 'scriptGenerate', text: '脚本生成' },
-  { value: 'log', text: '日志' },
+  { value: 'appList', text: '应用列表' },
+  { value: 'logList', text: '日志列表' },
+  { value: 'logScript', text: '日志脚本' },
 ];
 
 export default class Layout extends Component {
-
   componentDidCatch(error, errorInfo) {
     console.log(error, errorInfo);
   }

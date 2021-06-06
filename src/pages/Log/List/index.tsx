@@ -15,6 +15,14 @@ const detailArr = [
   { title: '内容：', key: 'content' },
 ];
 
+const logTypeArr = [
+  { text: '通用', value: 'log' },
+  { text: '错误', value: 'error' },
+  { text: '性能', value: 'perf' },
+  { text: '访问', value: 'visit' },
+  { text: '路由', value: 'route' },
+];
+
 export default () => {
   const [appList, setAppList] = useState([]);
   const [fetchQuery, setFetchQuery] = useState({
@@ -22,6 +30,7 @@ export default () => {
     currentPage: 1,
     datetime: '',
     like: '',
+    type: '',
   });
   const [pageData, setPageData] = useState({
     totalItems: 0,
@@ -30,7 +39,7 @@ export default () => {
 
   const formRef = useRef({});
 
-  const fetchLog = useCallback(({ appName, currentPage, datetime, like }) => {
+  const fetchLog = useCallback(({ appName, currentPage, datetime, like, type }) => {
     const { startTime, endTime } = datetime || {};
     const param = { appName, currentPage };
     if (startTime) {
@@ -41,6 +50,9 @@ export default () => {
     }
     if (like) {
       param.like = like;
+    }
+    if (type) {
+      param.type = type[0];
     }
     getLog(param)
       .then((res2) => {
@@ -56,6 +68,12 @@ export default () => {
   }, []);
 
   useEffect(() => {
+    if (fetchQuery.appName) {
+      fetchLog(fetchQuery);
+    }
+  }, [fetchQuery, fetchLog]);
+
+  useEffect(() => {
     getAppList()
       .then((res) => {
         if (res.length > 0) {
@@ -67,15 +85,11 @@ export default () => {
       .catch((e) => {
         Message.show({ title: e.message });
       });
-  }, []);
+  }, [fetchLog]);
 
-  const changePage = useCallback(
-    ({ page }) => {
-      fetchLog({ ...fetchQuery, currentPage: page });
-      setFetchQuery((t) => ({ ...t, currentPage: page }));
-    },
-    [fetchQuery, fetchLog],
-  );
+  const changePage = useCallback(({ page }) => {
+    setFetchQuery((t) => ({ ...t, currentPage: page }));
+  }, []);
 
   return (
     <div className="log-container">
@@ -94,6 +108,9 @@ export default () => {
           <Form.Item name="datetime" label="时间：">
             <DatetimeRange />
           </Form.Item>
+          <Form.Item name="type" label="日志类型：">
+            <Select options={logTypeArr} />
+          </Form.Item>
           <div>
             <Form.Item name="like" label="内容搜索：">
               <Input maxLength={50} />
@@ -102,9 +119,8 @@ export default () => {
               className="submit"
               onClick={() => {
                 const { values } = formRef.current.getValues();
-                const { appName, datetime, like } = values || {};
-                fetchLog({ ...fetchQuery, appName: appName[0], datetime, like, currentPage: 1 });
-                setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, like, currentPage: 1 }));
+                const { appName, datetime, like, type } = values || {};
+                setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, like, type, currentPage: 1 }));
               }}
             >
               搜索

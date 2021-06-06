@@ -4,14 +4,14 @@ import Layout from '@/components/layout';
 
 // 直接加载
 import Login from '@/pages/Login';
-import App from '@/pages/App';
 import AppList from '@/pages/App/List';
-import Log from '@/pages/Log';
+import AppManage from '@/pages/App/Manage';
+import LogList from '@/pages/Log/List';
 import NotFound from '@/pages/NotFound';
 // 懒加载
 // const Dashboard = lazy(() => import(/* webpackChunkName: "Dashboard" */ '@/pages/Dashboard'));
 import Dashboard from '@/pages/Dashboard';
-import ScriptGenerate from '@/pages/ScriptGenerate';
+import LogScript from '@/pages/Log/Script';
 
 export default [
   {
@@ -23,20 +23,20 @@ export default [
     component: Layout,
     children: [
       {
-        path: 'app',
-        component: App,
-      },
-      {
         path: 'appList',
         component: AppList,
       },
       {
-        path: 'scriptGenerate',
-        component: ScriptGenerate,
+        path: 'appManage',
+        component: AppManage,
       },
       {
-        path: 'log',
-        component: Log,
+        path: 'logList',
+        component: LogList,
+      },
+      {
+        path: 'LogScript',
+        component: LogScript,
       },
       {
         path: 'dashboard',

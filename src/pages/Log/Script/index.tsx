@@ -26,6 +26,8 @@ export default () => {
           lcTimeFloat: '5',
         }}
       >
+        <div className="bold">基础选项</div>
+
         <Form.Item
           label="日志上报地址："
           name="logUrl"
@@ -78,7 +80,7 @@ export default () => {
           ]}
         >
           <Input type="int" placeholder="输入缓存基准时间" />
-          <span className="ml8">缓存时间的计算方法：缓存基准时间 + 取最小整数(0~1随机数 * 缓存浮动时间)</span>
+          <span className="ml8">缓存日志发送时间间隔的计算方法：缓存基准时间 + 取最小整数(0~1随机数 * 缓存浮动时间)</span>
         </Form.Item>
         <Form.Item
           label="缓存浮动时间："
@@ -93,6 +95,9 @@ export default () => {
         >
           <Input type="int" placeholder="输入缓存浮动时间" />
         </Form.Item>
+
+        <div className="bold">高级选项</div>
+
         {/* 错误处理 */}
         <Form.Item label="全局错误处理：" name="errorHandle">
           <Check options={[{ value: '', text: '' }]} shape="rect" />
