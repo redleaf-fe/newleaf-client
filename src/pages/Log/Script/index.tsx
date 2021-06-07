@@ -3,7 +3,7 @@ import { Form, Input, Button, Check, Message } from 'redleaf-rc';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
-import { defines, body, utils, events } from './templates';
+import { defines, body, utils, error, route } from './templates';
 import jsmin from './jsmin';
 
 import './style.less';
@@ -26,7 +26,7 @@ export default () => {
           lcTimeFloat: '5',
         }}
       >
-        <div className="bold">基础选项</div>
+        <div className="bold mb16">基础选项</div>
 
         <Form.Item
           label="日志上报地址："
@@ -80,7 +80,9 @@ export default () => {
           ]}
         >
           <Input type="int" placeholder="输入缓存基准时间" />
-          <span className="ml8">缓存日志发送时间间隔的计算方法：缓存基准时间 + 取最小整数(0~1随机数 * 缓存浮动时间)</span>
+          <span className="ml8">
+            缓存日志发送时间间隔的计算方法：缓存基准时间 + 取最小整数(0~1随机数 * 缓存浮动时间)
+          </span>
         </Form.Item>
         <Form.Item
           label="缓存浮动时间："
@@ -96,12 +98,17 @@ export default () => {
           <Input type="int" placeholder="输入缓存浮动时间" />
         </Form.Item>
 
-        <div className="bold">高级选项</div>
+        <div className="bold mb16">高级选项</div>
 
         {/* 错误处理 */}
         <Form.Item label="全局错误处理：" name="errorHandle">
           <Check options={[{ value: '', text: '' }]} shape="rect" />
           <span>全局错误处理包括监听window的error事件、unhandledrejection事件</span>
+        </Form.Item>
+        {/* 路由日志 */}
+        <Form.Item label="路由日志：" name="routeHandle">
+          <Check options={[{ value: '', text: '' }]} shape="rect" />
+          <span>勾选路由日志会对window.history的pushState和replaceState方法进行包裹</span>
         </Form.Item>
         <Button
           className="submit"
@@ -112,13 +119,27 @@ export default () => {
               return;
             }
 
-            const { appId, logUrl, errorHandle = [], lcName = '', lcTimeBase = '5', lcTimeFloat = '5' } = values;
+            const {
+              appId,
+              logUrl,
+              errorHandle = [],
+              routeHandle = [],
+              lcName = '',
+              lcTimeBase = '5',
+              lcTimeFloat = '5',
+            } = values;
             setCode(
-              jsmin(`(function(window){
-              ${defines({ lcName })}${errorHandle.length > 0 ? events() : ''}${body({ appId, logUrl })}${utils({
+              // jsmin(`(function(window){
+              `(function(window){
+              ${defines({ lcName })}${errorHandle.length > 0 ? error() : ''}${
+                routeHandle.length > 0 ? route() : ''
+              }${body({
+                appId,
+                logUrl,
+              })}${utils({
                 lcTimeBase,
                 lcTimeFloat,
-              })}}(window));`),
+              })}}(window));`,
             );
           }}
         >
