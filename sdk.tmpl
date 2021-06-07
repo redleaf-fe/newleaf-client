@@ -1,14 +1,14 @@
 (function (window, undefined) {
   // defines
-  const logMethod = {
+  var logMethod = {
     xhr: sendXhr,
     img: sendImg,
     beacon: sendBeacon,
   };
 
-  const cache = {};
-  const lcName = '${lcName || '__newleaf_log_cache__'}';
-  const lc = window.localStorage || {
+  var cache = {};
+  var lcName = '${lcName || '__newleaf_log_cache__'}';
+  var lc = window.localStorage || {
     setItem: function (name, val) {
       cache[name] = val;
     },
@@ -20,28 +20,68 @@
     }
   };
 
-  // events
+  // error
   window.addEventListener('error', function (e) {
-    const { message, stack } = e.error;
+    var _e$error = e.error,
+        message = _e$error.message,
+        stack = _e$error.stack;
+
     newleaf.log({
       content: JSON.stringify({
         message,
         stack
       }),
       type: 'error'
-    })
+    });
   });
 
   window.addEventListener('unhandledrejection', function (e) {
-    const { message, stack } = e.reason;
+    var _e$reason = e.reason,
+        message = _e$reason.message,
+        stack = _e$reason.stack;
+
     newleaf.log({
       content: JSON.stringify({
         message,
         stack
       }),
       type: 'error'
-    })
+    });
   });
+
+  // route
+  function hackHistory(type) {
+    var source = window.history[type];
+    return function () {
+      var event = new Event(type);
+      event._args = arguments;
+      window.dispatchEvent(event);
+      var rewrite = source.apply(this, arguments);
+      return rewrite;
+    };
+  }
+
+  window.history.pushState = hackHistory('pushState');
+  window.history.replaceState = hackHistory('replaceState');
+
+  window.addEventListener('pushState', function (e) {
+    newleaf.log({
+      content: e._args[2] || '',
+      type: 'route'
+    });
+  }, true);
+  window.addEventListener('replaceState', function (e) {
+    newleaf.log({
+      content: e._args[2] || '',
+      type: 'route'
+    });
+  }, true);
+  window.addEventListener('hashchange', function (e) {
+    newleaf.log({
+      content: e.newURL,
+      type: 'route'
+    });
+  }, true);
 
   // body
   function Newleaf() {
@@ -54,7 +94,16 @@
     }
   }
 
-  Newleaf.prototype.log = function ({ type = 'log', content = '', method, logUrl, appId, cache = true }) {
+  Newleaf.prototype.log = function (_ref) {
+    var _ref$type = _ref.type,
+        type = _ref$type === void 0 ? "log" : _ref$type,
+        _ref$content = _ref.content,
+        content = _ref$content === void 0 ? "" : _ref$content,
+        method = _ref.method,
+        logUrl = _ref.logUrl,
+        appId = _ref.appId,
+        _ref$cache = _ref.cache,
+        cache = _ref$cache === void 0 ? true : _ref$cache;
     // 有内容才发送
     if (content) {
       // 默认缓存再发送
@@ -80,7 +129,7 @@
 
   // utils
   function save(info) {
-    const data = JSON.parse(lc.getItem(lcName) || '[]');
+    var data = JSON.parse(lc.getItem(lcName) || '[]');
     data.push(info);
     lc.setItem(lcName, JSON.stringify(data));
   }
@@ -90,15 +139,15 @@
   }
 
   function sendXhr(url, data) {
-    const xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(data));
   }
 
   function sendImg(url, data) {
-    const img = new Image();
-    img.src = \`\${url}?\${new URLSearchParams(data).toString()}\`
+    var img = new Image();
+    img.src = url + '?' + new URLSearchParams(data).toString();
   }
 
   function getRandTime() {
@@ -106,11 +155,11 @@
   }
 
   function send() {
-    let cnt = 0;
+    var cnt = 0;
 
     function sendData() {
-      const data = JSON.parse(lc.getItem(lcName) || '[]');
-      const info = data.pop();
+      var data = JSON.parse(lc.getItem(lcName) || '[]');
+      var info = data.pop();
       if (info) {
         logMethod[info.method](info.logUrl, info);
       }
