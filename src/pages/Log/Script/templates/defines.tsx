@@ -1,14 +1,14 @@
 export default function ({ lcName }) {
   return `
-  const logMethod = {
+  var logMethod = {
     xhr: sendXhr,
     img: sendImg,
     beacon: sendBeacon,
   };
 
-  const cache = {};
-  const lcName = '${lcName || '__newleaf_log_cache__'}';
-  const lc = window.localStorage || {
+  var cache = {};
+  var lcName = '${lcName || '__newleaf_log_cache__'}';
+  var lc = window.localStorage || {
     setItem: function (name, val) {
       cache[name] = val;
     },

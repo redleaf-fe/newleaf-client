@@ -1,7 +1,10 @@
 export function error() {
   return `
   window.addEventListener('error', function (e) {
-    const { message, stack } = e.error;
+    var _e$error = e.error,
+        message = _e$error.message,
+        stack = _e$error.stack;
+
     newleaf.log({
       content: JSON.stringify({
         message,
@@ -12,7 +15,10 @@ export function error() {
   });
 
   window.addEventListener('unhandledrejection', function (e) {
-    const { message, stack } = e.reason;
+    var _e$reason = e.reason,
+        message = _e$reason.message,
+        stack = _e$reason.stack;
+
     newleaf.log({
       content: JSON.stringify({
         message,

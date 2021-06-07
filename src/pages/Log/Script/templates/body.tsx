@@ -10,7 +10,16 @@ export default function ({ appId, logUrl }) {
     }
   }
 
-  Newleaf.prototype.log = function ({ type = 'log', content = '', method, logUrl, appId, cache = true }) {
+  Newleaf.prototype.log = function (_ref) {
+    var _ref$type = _ref.type,
+        type = _ref$type === void 0 ? "log" : _ref$type,
+        _ref$content = _ref.content,
+        content = _ref$content === void 0 ? "" : _ref$content,
+        method = _ref.method,
+        logUrl = _ref.logUrl,
+        appId = _ref.appId,
+        _ref$cache = _ref.cache,
+        cache = _ref$cache === void 0 ? true : _ref$cache;
     // 有内容才发送
     if (content) {
       // 默认缓存再发送
