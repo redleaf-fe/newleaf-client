@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { Button, Table, Dialog, Message } from 'redleaf-rc';
-import { getAppList, appDetail } from '@/api/app';
+import { Button, Table, Dialog, Message, Popup } from 'redleaf-rc';
+import { getAppList, appDetail, deleteApp } from '@/api/app';
 import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
@@ -25,7 +25,7 @@ export default () => {
       {
         title: '最后更新时间',
         columnKey: 'updatedAt',
-        width: '100px',
+        width: '180px',
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -45,15 +45,16 @@ export default () => {
         render({ meta }) {
           return (
             <div className="operate">
-              <span
-                className="color-primary pointer mr8"
+              <div className="color-primary pointer">成员管理</div>
+              <div
+                className="color-primary pointer"
                 onClick={() => {
                   appDetail({ id: meta.id })
                     .then((res) => {
                       res.desc = res.desc || '';
                       res.git = res.git || '';
                       dlgRef.current = Dialog.show({
-                        content: <CreateDlg {...{ closeDlg, getList, info: res }} />,
+                        content: <CreateDlg {...{ closeDlg, getList, info: { ...res, id: meta.id } }} />,
                         title: '编辑应用',
                       });
                     })
@@ -63,11 +64,21 @@ export default () => {
                 }}
               >
                 编辑
-              </span>
-              |
-              <span className="color-danger pointer ml8" onClick={() => {}}>
-                删除
-              </span>
+              </div>
+              <Popup
+                onOk={() => {
+                  deleteApp({ id: meta.id })
+                    .then((res) => {
+                      Message.show({ title: res.message });
+                      getList();
+                    })
+                    .catch((e) => {
+                      Message.show({ title: e.message });
+                    });
+                }}
+              >
+                <div className="color-danger pointer">删除</div>
+              </Popup>
             </div>
           );
         },
