@@ -28,6 +28,11 @@ div {
 
 // 全局
 
+.dialog-height {
+  height: 400px;
+  overflow: scroll;
+}
+
 .pointer {
   cursor: pointer;
 }
@@ -42,6 +47,14 @@ div {
 
 .vertical-align-top {
   vertical-align: top;
+}
+
+.vertical-align-middle {
+  vertical-align: middle;
+}
+
+.text-align-right {
+  text-align: right;
 }
 
 .bold {
@@ -65,11 +78,11 @@ div {
 }
 
 .mt16 {
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
 .mb16 {
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .mr16 {
