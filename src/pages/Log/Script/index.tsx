@@ -9,7 +9,7 @@ import jsmin from './jsmin';
 import './style.less';
 
 export default () => {
-  const formRef = useRef({});
+  const formRef = useRef();
   const [code, setCode] = useState('');
 
   return (

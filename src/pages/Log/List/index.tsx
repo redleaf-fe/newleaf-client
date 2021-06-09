@@ -38,7 +38,7 @@ export default () => {
     data: [],
   });
 
-  const formRef = useRef({});
+  const formRef = useRef();
 
   const fetchLog = useCallback(({ appName, currentPage, datetime, like, type }) => {
     const { startTime, endTime } = datetime || {};
@@ -117,7 +117,7 @@ export default () => {
               <Input maxLength={50} />
             </Form.Item>
             <Button
-              className="submit"
+              className="submit vertical-align-middle"
               onClick={() => {
                 const { values } = formRef.current.getValues();
                 const { appName, datetime, like, type } = values || {};
@@ -129,7 +129,7 @@ export default () => {
           </div>
         </Form>
       )}
-      <div className="page">
+      <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
           type="complex"
@@ -161,7 +161,7 @@ export default () => {
         )}
       </div>
 
-      <div className="page">
+      <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
           type="complex"

@@ -23,7 +23,7 @@ const apiMap = {
 
 export default () => {
   const [type, setType] = useState('login');
-  const formRef = useRef({});
+  const formRef = useRef();
 
   return (
     <div className="login-container">

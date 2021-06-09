@@ -5,7 +5,6 @@ import Layout from '@/components/layout';
 // 直接加载
 import Login from '@/pages/Login';
 import AppList from '@/pages/App/List';
-import AppManage from '@/pages/App/Manage';
 import LogList from '@/pages/Log/List';
 import NotFound from '@/pages/NotFound';
 // 懒加载
@@ -25,10 +24,6 @@ export default [
       {
         path: 'appList',
         component: AppList,
-      },
-      {
-        path: 'appManage',
-        component: AppManage,
       },
       {
         path: 'logList',
