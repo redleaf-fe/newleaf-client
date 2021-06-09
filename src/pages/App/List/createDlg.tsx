@@ -10,7 +10,7 @@ export default (props) => {
 
   return (
     <Form
-      className="create-container"
+      className="create-container dialog-height"
       defaultValue={info}
       getInstance={(i) => {
         formRef.current = i;
@@ -44,11 +44,14 @@ export default (props) => {
               Message.show({ title: formUnpass });
               return;
             }
+            if (info.id) {
+              values.id = info.id;
+            }
             saveApp(values)
-              .then(() => {
+              .then((res) => {
                 closeDlg?.();
                 getList?.();
-                Message.show({ title: '创建成功' });
+                Message.show({ title: res.message });
               })
               .catch((e) => {
                 Message.show({ title: e.message });
