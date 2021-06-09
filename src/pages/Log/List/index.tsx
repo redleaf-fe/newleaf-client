@@ -13,6 +13,7 @@ const detailArr = [
   { title: 'UA：', key: 'ua' },
   { title: 'referer：', key: 'referer' },
   { title: '内容：', key: 'content' },
+  { title: '类型：', key: 'type' },
 ];
 
 const logTypeArr = [

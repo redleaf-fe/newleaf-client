@@ -28,13 +28,30 @@
   }
 
   .page-title {
-    padding: 15px 20px;
-    font-size: 18px;
-    font-weight: bold;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    overflow: hidden;
+
+    .page-name {
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .user-name {
+      float: right;
+      line-height: 52px;
+      margin-right: 20px;
+      cursor: pointer;
+    }
   }
 
   .main {
     padding: 20px;
   }
+}
+
+.change-user .redleaf-rc-bubble-content{
+  width: 60px;
+  cursor: pointer;
 }
