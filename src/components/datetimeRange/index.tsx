@@ -6,23 +6,23 @@ import './style.less';
 
 export default (props) => {
   const { onChange } = props;
-  const [timeRange, setTimeRange] = useState({ startTime: '', endTime: '' });
+  const [state, setState] = useState({ startTime: '', endTime: '' });
 
   useEffect(() => {
-    onChange?.({ value: timeRange });
-  }, [timeRange, onChange]);
+    onChange?.({ value: state });
+  }, [state, onChange]);
 
   return (
     <>
       <DateTime
         onChange={({ value }) => {
-          setTimeRange((t) => ({ ...t, startTime: value }));
+          setState((t) => ({ ...t, startTime: value }));
         }}
       />
       <span className="divide">-</span>
       <DateTime
         onChange={({ value }) => {
-          setTimeRange((t) => ({ ...t, endTime: value }));
+          setState((t) => ({ ...t, endTime: value }));
         }}
       />
     </>
