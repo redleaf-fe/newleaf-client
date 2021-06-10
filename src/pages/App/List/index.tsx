@@ -1,14 +1,40 @@
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { Button, Table, Dialog, Message, Popup } from 'redleaf-rc';
+import React, { useCallback, useRef, useMemo } from 'react';
+import { Form, Button, Table, Dialog, Message, Popup, Input } from 'redleaf-rc';
 import { getAppList, appDetail, deleteApp } from '@/api/app';
+import { getAllAuth, saveAuth, deleteAuth } from '@/api/appUser';
+import Pagination from '@/components/pagination';
+import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
 import './style.less';
 
 export default () => {
-  const [datasets, setDatasets] = useState([]);
-  const dlgRef = useRef();
+  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+    reqData: {
+      appName: '',
+    },
+    reqMethod: getAppList,
+    dealReqData: useCallback((args) => {
+      const { appName, currentPage } = args;
+      const param: any = { currentPage };
+      if (appName) {
+        param.appName = appName;
+      }
+      return param;
+    }, []),
+  });
+
+  const formRef: any = useRef();
+  const dlgRef: any = useRef();
+
+  const getList = useCallback((page) => {
+    setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
+  }, [setFetchQuery]);
+
+  const closeDlg = useCallback(() => {
+    dlgRef.current?.();
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -45,7 +71,12 @@ export default () => {
         render({ meta }) {
           return (
             <div className="operate">
-              <div className="color-primary pointer">成员管理</div>
+              <div className="color-primary pointer" onClick={() => {}}>
+                成员管理
+              </div>
+              <div className="color-primary pointer" onClick={() => {}}>
+                部署配置
+              </div>
               <div
                 className="color-primary pointer"
                 onClick={() => {
@@ -70,7 +101,7 @@ export default () => {
                   deleteApp({ id: meta.id })
                     .then((res) => {
                       Message.show({ title: res.message });
-                      getList();
+                      getList(1);
                     })
                     .catch((e) => {
                       Message.show({ title: e.message });
@@ -84,24 +115,8 @@ export default () => {
         },
       },
     ],
-    [],
+    [closeDlg, getList],
   );
-
-  const getList = useCallback(() => {
-    getAppList()
-      .then((res) => {
-        setDatasets(res);
-      })
-      .catch((e) => {
-        Message.show({ title: e.message });
-      });
-  }, []);
-
-  useEffect(getList, [getList]);
-
-  const closeDlg = useCallback(() => {
-    dlgRef.current?.();
-  }, []);
 
   return (
     <div className="applist-container">
@@ -117,7 +132,36 @@ export default () => {
           新建应用
         </Button>
       </div>
-      <Table columns={columns} datasets={datasets} bordered="row" />
+      {/*  */}
+      <Form
+        layout="horizontal"
+        getInstance={(i) => {
+          formRef.current = i;
+        }}
+      >
+        <Form.Item name="appName" label="应用名称：">
+          <Input maxLength={50} />
+        </Form.Item>
+        <Button className="ml16 vertical-align-middle">搜索</Button>
+      </Form>
+      {/*  */}
+      <div className="text-align-right mb8">
+        <Pagination
+          totalItems={pageData.totalItems}
+          type="complex"
+          currentPage={fetchQuery.currentPage}
+          onChange={changePage}
+        />
+      </div>
+      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      <div className="text-align-right">
+        <Pagination
+          totalItems={pageData.totalItems}
+          type="complex"
+          currentPage={fetchQuery.currentPage}
+          onChange={changePage}
+        />
+      </div>
     </div>
   );
 };
