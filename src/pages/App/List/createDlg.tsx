@@ -6,7 +6,7 @@ import { formUnpass } from '@/const';
 
 export default (props) => {
   const { closeDlg, getList, info = {} } = props;
-  const formRef = useRef();
+  const formRef: any = useRef();
 
   return (
     <Form

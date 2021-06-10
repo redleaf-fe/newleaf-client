@@ -9,7 +9,7 @@ import jsmin from './jsmin';
 import './style.less';
 
 export default () => {
-  const formRef = useRef();
+  const formRef: any = useRef();
   const [code, setCode] = useState('');
 
   return (
@@ -129,8 +129,7 @@ export default () => {
               lcTimeFloat = '5',
             } = values;
             setCode(
-              // jsmin(`(function(window){
-              `(function(window){
+              jsmin(`(function(window){
               ${defines({ lcName })}${errorHandle.length > 0 ? error() : ''}${
                 routeHandle.length > 0 ? route() : ''
               }${body({
@@ -139,7 +138,7 @@ export default () => {
               })}${utils({
                 lcTimeBase,
                 lcTimeFloat,
-              })}}(window));`,
+              })}}(window));`),
             );
           }}
         >

@@ -64,7 +64,7 @@ export default () => {
     }, []),
   });
 
-  const formRef = useRef();
+  const formRef: any = useRef();
 
   useEffect(() => {
     getAppList({ currentPage: 1 })
