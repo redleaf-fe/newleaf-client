@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAppList } from '@/api/app';
 import { getLog } from '@/api/log';
 import { Form, Select, Button, Message, DateTime, Input } from 'redleaf-rc';
+import usePageTable from '@/hooks/usePageTable';
 import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 
@@ -25,86 +26,77 @@ const logTypeArr = [
 ];
 
 export default () => {
-  const [appList, setAppList] = useState([]);
-  const [fetchQuery, setFetchQuery] = useState({
-    appName: '',
-    currentPage: 1,
-    datetime: '',
-    like: '',
-    type: '',
-  });
-  const [pageData, setPageData] = useState({
-    totalItems: 0,
+  const [appList, setAppList] = useState({
+    count: 0,
     data: [],
+    // 已请求
+    reqed: false,
+  });
+
+  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+    reqData: {
+      appName: '',
+      datetime: '',
+      like: '',
+      type: '',
+    },
+    reqMethod: getLog,
+    dealReqData: useCallback((args) => {
+      const { appName, currentPage, like, type } = args;
+      const { startTime, endTime } = args.datetime || {};
+      const param: any = { appName, currentPage };
+      if (startTime) {
+        param.startTime = new Date(startTime).getTime();
+      }
+      if (endTime) {
+        param.endTime = new Date(endTime).getTime();
+      }
+      if (like) {
+        param.like = like;
+      }
+      if (type) {
+        param.type = type[0];
+      }
+      return param;
+    }, []),
+    reqCondition: useCallback((args) => {
+      return args.appName;
+    }, []),
   });
 
   const formRef = useRef();
 
-  const fetchLog = useCallback(({ appName, currentPage, datetime, like, type }) => {
-    const { startTime, endTime } = datetime || {};
-    const param = { appName, currentPage };
-    if (startTime) {
-      param.startTime = new Date(startTime).getTime();
-    }
-    if (endTime) {
-      param.endTime = new Date(endTime).getTime();
-    }
-    if (like) {
-      param.like = like;
-    }
-    if (type) {
-      param.type = type[0];
-    }
-    getLog(param)
-      .then((res2) => {
-        const { count, rows } = res2;
-        setPageData({
-          totalItems: count,
-          data: rows,
-        });
-      })
-      .catch((e) => {
-        Message.show({ title: e.message });
-      });
-  }, []);
-
   useEffect(() => {
-    if (fetchQuery.appName) {
-      fetchLog(fetchQuery);
-    }
-  }, [fetchQuery, fetchLog]);
-
-  useEffect(() => {
-    getAppList()
+    getAppList({ currentPage: 1 })
       .then((res) => {
-        if (res.length > 0) {
-          setAppList(res.map((v) => ({ value: v.appName, text: v.appName })));
-          setFetchQuery((t) => ({ ...t, appName: res[0].appName }));
-          fetchLog({ currentPage: 1, appName: res[0].appName });
+        if (res.count > 0) {
+          setAppList((t) => ({
+            ...t,
+            data: res.rows.map((v) => ({ value: v.appName, text: v.appName })),
+            reqed: true,
+          }));
+          setFetchQuery((t) => ({ ...t, appName: res.rows[0].appName }));
         }
       })
       .catch((e) => {
+        setAppList((t) => ({ ...t, reqed: true }));
         Message.show({ title: e.message });
       });
-  }, [fetchLog]);
-
-  const changePage = useCallback(({ page }) => {
-    setFetchQuery((t) => ({ ...t, currentPage: page }));
-  }, []);
+  }, [setFetchQuery]);
 
   return (
     <div className="log-container">
-      {appList.length > 0 && (
+      {appList.reqed && (
         <Form
           layout="horizontal"
           className="log-form"
-          defaultValue={{ appName: [appList[0].value] }}
+          defaultValue={{ appName: [appList.data[0].value] }}
           getInstance={(i) => {
             formRef.current = i;
           }}
         >
           <Form.Item name="appName" label="应用名称：">
-            <Select options={appList} />
+            <Select options={appList.data} />
           </Form.Item>
           <Form.Item name="datetime" label="时间：">
             <DatetimeRange />
