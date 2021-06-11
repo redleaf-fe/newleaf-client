@@ -19,6 +19,7 @@ export default function ({ appId, logUrl }) {
         logUrl = _ref.logUrl,
         appId = _ref.appId,
         _ref$cache = _ref.cache,
+        time = new Date(),
         cache = _ref$cache === void 0 ? true : _ref$cache;
     // 有内容才发送
     if (content) {
@@ -28,11 +29,13 @@ export default function ({ appId, logUrl }) {
         logUrl: logUrl || this.logUrl,
         appId: appId || this.appId,
         content,
-        type
+        type,
+        time
       }) : logMethod[method || this.method](logUrl || this.logUrl, {
         appId: appId || this.appId,
         content,
-        type
+        type,
+        time
       });
     }
   };

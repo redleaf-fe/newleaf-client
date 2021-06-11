@@ -48,13 +48,13 @@ export function route() {
 
   window.addEventListener('pushState', function (e) {
     newleaf.log({
-      content: e._args[2] || '',
+      content: e._args[2],
       type: 'route'
     });
   }, true);
   window.addEventListener('replaceState', function (e) {
     newleaf.log({
-      content: e._args[2] || '',
+      content: e._args[2],
       type: 'route'
     });
   }, true);
