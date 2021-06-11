@@ -140,7 +140,7 @@ export default () => {
                     <p key={kk}>
                       <span className="title">{vv.title}</span>
                       <span className="content">
-                        {vv.key === 'time' ? DateTime.dayjs(+v[vv.key]).format('YYYY-MM-DD HH:mm:ss') : v[vv.key]}
+                        {vv.key === 'time' ? DateTime.dayjs(v[vv.key]).format('YYYY-MM-DD HH:mm:ss') : v[vv.key]}
                       </span>
                     </p>
                   );

@@ -28,9 +28,12 @@ export default () => {
   const formRef: any = useRef();
   const dlgRef: any = useRef();
 
-  const getList = useCallback((page) => {
-    setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
-  }, [setFetchQuery]);
+  const getList = useCallback(
+    (page) => {
+      setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
+    },
+    [setFetchQuery],
+  );
 
   const closeDlg = useCallback(() => {
     dlgRef.current?.();
@@ -142,7 +145,15 @@ export default () => {
         <Form.Item name="appName" label="应用名称：">
           <Input maxLength={50} />
         </Form.Item>
-        <Button className="ml16 vertical-align-middle">搜索</Button>
+        <Button
+          className="ml16 vertical-align-middle"
+          onClick={() => {
+            const { values } = formRef.current.getValues();
+            setFetchQuery((t) => ({ ...t, appName: values.appName }));
+          }}
+        >
+          搜索
+        </Button>
       </Form>
       {/*  */}
       <div className="text-align-right mb8">

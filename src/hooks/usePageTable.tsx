@@ -1,7 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Message } from 'redleaf-rc';
 
-export default ({ reqData, reqMethod, dealReqData, reqCondition }) => {
+export default ({
+  reqData,
+  reqMethod,
+  dealReqData,
+  reqCondition,
+}: {
+  reqData?: any;
+  reqMethod: (args) => any;
+  dealReqData?: (args) => any;
+  reqCondition?: (args) => boolean;
+}) => {
   const [fetchQuery, setFetchQuery] = useState({
     currentPage: 1,
     pageSize: 10,
@@ -30,7 +40,11 @@ export default ({ reqData, reqMethod, dealReqData, reqCondition }) => {
   );
 
   useEffect(() => {
-    if (reqCondition(fetchQuery)) {
+    if (typeof reqCondition === 'function') {
+      if (reqCondition(fetchQuery)) {
+        fetchMethod(fetchQuery);
+      }
+    } else {
       fetchMethod(fetchQuery);
     }
   }, [fetchQuery, fetchMethod, reqCondition]);
