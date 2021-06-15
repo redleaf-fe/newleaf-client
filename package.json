@@ -9,7 +9,7 @@
     "js-cookie": "^2.2.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "redleaf-rc": "^0.1.0"
+    "redleaf-rc": "^0.1.1"
   },
   "devDependencies": {
     "@iceworks/spec": "^1.0.0",
