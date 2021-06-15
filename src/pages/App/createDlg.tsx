@@ -10,7 +10,7 @@ export default (props) => {
 
   return (
     <Form
-      className="create-container dialog-height"
+      className="create-container dialog-center"
       defaultValue={info}
       getInstance={(i) => {
         formRef.current = i;
