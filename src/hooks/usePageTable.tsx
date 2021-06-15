@@ -24,7 +24,7 @@ export default ({
 
   const fetchMethod = useCallback(
     (req) => {
-      reqMethod(dealReqData(req))
+      reqMethod(typeof dealReqData === 'function' ? dealReqData(req) : req)
         .then((res2) => {
           const { count, rows } = res2;
           setPageData({
