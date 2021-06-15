@@ -1,8 +1,11 @@
-import React, { useCallback, useRef, useMemo } from 'react';
-import { Form, Button, Table, Dialog, Message, Popup, Input } from 'redleaf-rc';
-import { getPubishList, savePublish, deletePublish, publishDetail } from '@/api/publish';
+import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
+import { Form, Button, Table, Dialog, Message, Popup, Input, Select } from 'redleaf-rc';
+import { getPubishList, savePublish, deletePublish, publishDetail } from '@/api/appPublish';
+import { getAppList } from '@/api/app';
+import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
+import { maxPageSize } from '@/const';
 import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
@@ -10,23 +13,51 @@ import ManageDlg from './manageDlg';
 import './style.less';
 
 export default () => {
+  const [appList, setAppList] = useState({
+    count: 0,
+    data: [],
+    // 已请求
+    reqed: false,
+  });
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
       publishName: '',
+      appId: '',
     },
     reqMethod: getPubishList,
     dealReqData: useCallback((args) => {
-      const { publishName, currentPage } = args;
-      const param: any = { currentPage };
+      const { appId, publishName, currentPage } = args;
+      const param: any = { appId, currentPage };
       if (publishName) {
         param.publishName = publishName;
       }
       return param;
     }, []),
+    reqCondition: useCallback((args) => {
+      return args.appId;
+    }, []),
   });
 
   const formRef: any = useRef();
   const dlgRef: any = useRef();
+
+  useEffect(() => {
+    getAppList({ currentPage: 1, pageSize: maxPageSize })
+      .then((res) => {
+        if (res.count > 0) {
+          setAppList((t) => ({
+            ...t,
+            data: res.rows.map((v) => ({ value: v.id, text: v.appName })),
+            reqed: true,
+          }));
+          setFetchQuery((t) => ({ ...t, appId: res.rows[0].id }));
+        }
+      })
+      .catch((e) => {
+        setAppList((t) => ({ ...t, reqed: true }));
+        Message.show({ title: e.message });
+      });
+  }, [setFetchQuery]);
 
   const getList = useCallback(
     (page) => {
@@ -137,25 +168,34 @@ export default () => {
         </Button>
       </div>
       {/*  */}
-      <Form
-        layout="horizontal"
-        getInstance={(i) => {
-          formRef.current = i;
-        }}
-      >
-        <Form.Item name="publishName" label="发布名称：">
-          <Input maxLength={50} />
-        </Form.Item>
-        <Button
-          className="ml16 vertical-align-middle"
-          onClick={() => {
-            const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, publishName: values.publishName }));
+      {appList.reqed && (
+        <Form
+          layout="horizontal"
+          defaultValue={{ appName: [appList.data[0].value] }}
+          getInstance={(i) => {
+            formRef.current = i;
           }}
         >
-          搜索
-        </Button>
-      </Form>
+          <Form.Item name="appName" label="应用名称：">
+            <Select options={appList.data} />
+          </Form.Item>
+          <Form.Item name="datetime" label="时间：">
+            <DatetimeRange />
+          </Form.Item>
+          <Form.Item name="publishName" label="发布名称：">
+            <Input maxLength={50} />
+          </Form.Item>
+          <Button
+            className="ml16 vertical-align-middle"
+            onClick={() => {
+              const { values } = formRef.current.getValues();
+              setFetchQuery((t) => ({ ...t, publishName: values.publishName }));
+            }}
+          >
+            搜索
+          </Button>
+        </Form>
+      )}
       {/*  */}
       <div className="text-align-right mb8">
         <Pagination
