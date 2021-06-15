@@ -9,6 +9,7 @@ export const context = React.createContext({});
 const menuData = [
   { value: 'dashboard', text: '大盘' },
   { value: 'appList', text: '应用管理' },
+  { value: 'publishList', text: '发布管理' },
   { value: 'logList', text: '日志列表' },
   { value: 'logScript', text: '日志脚本' },
 ];

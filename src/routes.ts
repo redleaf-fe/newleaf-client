@@ -4,7 +4,8 @@ import Layout from '@/components/layout';
 
 // 直接加载
 import Login from '@/pages/Login';
-import AppList from '@/pages/App/List';
+import AppList from '@/pages/App';
+import PublishList from '@/pages/Publish';
 import LogList from '@/pages/Log/List';
 import NotFound from '@/pages/NotFound';
 // 懒加载
@@ -24,6 +25,10 @@ export default [
       {
         path: 'appList',
         component: AppList,
+      },
+      {
+        path: 'publishList',
+        component: PublishList,
       },
       {
         path: 'logList',
