@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAppList } from '@/api/app';
 import { getLog } from '@/api/log';
+import { maxPageSize } from '@/const';
 import { Form, Select, Button, Message, DateTime, Input } from 'redleaf-rc';
 import usePageTable from '@/hooks/usePageTable';
 import DatetimeRange from '@/components/datetimeRange';
@@ -35,16 +36,16 @@ export default () => {
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
-      appName: '',
+      appId: '',
       datetime: '',
       like: '',
       type: '',
     },
     reqMethod: getLog,
     dealReqData: useCallback((args) => {
-      const { appName, currentPage, like, type } = args;
+      const { appId, currentPage, like, type } = args;
       const { startTime, endTime } = args.datetime || {};
-      const param: any = { appName, currentPage };
+      const param: any = { appId, currentPage };
       if (startTime) {
         param.startTime = new Date(startTime).getTime();
       }
@@ -60,22 +61,22 @@ export default () => {
       return param;
     }, []),
     reqCondition: useCallback((args) => {
-      return args.appName;
+      return args.appId;
     }, []),
   });
 
   const formRef: any = useRef();
 
   useEffect(() => {
-    getAppList({ currentPage: 1 })
+    getAppList({ currentPage: 1, pageSize: maxPageSize })
       .then((res) => {
         if (res.count > 0) {
           setAppList((t) => ({
             ...t,
-            data: res.rows.map((v) => ({ value: v.appName, text: v.appName })),
+            data: res.rows.map((v) => ({ value: v.id, text: v.appName })),
             reqed: true,
           }));
-          setFetchQuery((t) => ({ ...t, appName: res.rows[0].appName }));
+          setFetchQuery((t) => ({ ...t, appId: res.rows[0].id }));
         }
       })
       .catch((e) => {
@@ -113,7 +114,7 @@ export default () => {
               onClick={() => {
                 const { values } = formRef.current.getValues();
                 const { appName, datetime, like, type } = values || {};
-                setFetchQuery((t) => ({ ...t, appName: appName[0], datetime, like, type, currentPage: 1 }));
+                setFetchQuery((t) => ({ ...t, appId: appName[0], datetime, like, type, currentPage: 1 }));
               }}
             >
               搜索
