@@ -28,7 +28,12 @@ div {
 
 // 全局
 
-.dialog-height {
+.dialog-side {
+  height: 100%;
+  overflow: scroll;
+}
+
+.dialog-center {
   height: 400px;
   overflow: scroll;
 }
