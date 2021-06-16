@@ -8,6 +8,7 @@ export const context = React.createContext({});
 
 const menuData = [
   { value: 'dashboard', text: '大盘' },
+  { value: 'appGroup', text: '应用分组' },
   { value: 'appList', text: '应用管理' },
   { value: 'publishList', text: '发布管理' },
   { value: 'logList', text: '日志列表' },
@@ -23,7 +24,7 @@ export default class Layout extends Component {
   state = {
     pageTitle: '',
     layout: {
-      userName: '',
+      username: '',
     },
   };
 
@@ -75,7 +76,7 @@ export default class Layout extends Component {
                 }
                 position="bottomRight"
               >
-                <span>{Cookie.get('userName')}</span>
+                <span>{Cookie.get('username')}</span>
               </Trigger>
             </div>
             <div className="main">{children}</div>

@@ -5,6 +5,7 @@ import Layout from '@/components/layout';
 // 直接加载
 import Login from '@/pages/Login';
 import AppList from '@/pages/App';
+import AppGroup from '@/pages/Group';
 import PublishList from '@/pages/Publish';
 import LogList from '@/pages/Log/List';
 import NotFound from '@/pages/NotFound';
@@ -22,6 +23,10 @@ export default [
     path: '/',
     component: Layout,
     children: [
+      {
+        path: 'appGroup',
+        component: AppGroup,
+      },
       {
         path: 'appList',
         component: AppList,
