@@ -35,7 +35,7 @@ export default () => {
       >
         <div className="title">{typeMap[type]}</div>
         <Form.Item
-          name="userName"
+          name="username"
           validators={[
             {
               rule: required,
@@ -57,17 +57,30 @@ export default () => {
           <Input type="password" placeholder="输入密码" />
         </Form.Item>
         {type === 'register' && (
-          <Form.Item
-            name="password2"
-            validators={[
-              {
-                rule: required,
-                message: requiredMsg,
-              },
-            ]}
-          >
-            <Input type="password" placeholder="再次输入密码" />
-          </Form.Item>
+          <>
+            <Form.Item
+              name="password2"
+              validators={[
+                {
+                  rule: required,
+                  message: requiredMsg,
+                },
+              ]}
+            >
+              <Input type="password" placeholder="再次输入密码" />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              validators={[
+                {
+                  rule: required,
+                  message: requiredMsg,
+                },
+              ]}
+            >
+              <Input placeholder="输入邮箱" />
+            </Form.Item>
+          </>
         )}
         <Button
           className="submit"
