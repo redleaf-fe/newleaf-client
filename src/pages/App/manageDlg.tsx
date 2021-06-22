@@ -40,7 +40,7 @@ export default (props) => {
     getUserDataByName(val)
       .then((res) => {
         if (res && res.length > 0) {
-          setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.userName })));
+          setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
         }
       })
       .catch((e) => {
@@ -66,7 +66,7 @@ export default (props) => {
     () => [
       {
         title: '用户',
-        columnKey: 'userName',
+        columnKey: 'username',
         grow: 1,
       },
       {
@@ -85,7 +85,7 @@ export default (props) => {
                   {
                     appName,
                     appId: id,
-                    userName: meta.userName,
+                    username: meta.username,
                     uid: meta.uid,
                     auth: changeData[0].value,
                   },
@@ -147,11 +147,11 @@ export default (props) => {
             if (values.user && values.user.length > 0) {
               changeAuth(
                 values.user.map((v) => {
-                  const { userName, uid } = JSON.parse(v);
+                  const { username, uid } = JSON.parse(v);
                   return {
                     appName,
                     appId: id,
-                    userName,
+                    username,
                     uid,
                     auth: defaultAuth,
                   };
