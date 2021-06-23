@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useMemo } from 'react';
 import { Form, Button, Table, Dialog, Message, Popup, Input } from 'redleaf-rc';
-import { getAppList, appDetail, deleteApp } from '@/api/app';
+import { getAppList, appDetail } from '@/api/app';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
@@ -109,20 +109,6 @@ export default () => {
               >
                 编辑
               </div>
-              <Popup
-                onOk={() => {
-                  deleteApp({ id: meta.id })
-                    .then((res) => {
-                      Message.show({ title: res.message });
-                      getList(1);
-                    })
-                    .catch((e) => {
-                      Message.show({ title: e.message });
-                    });
-                }}
-              >
-                <div className="color-danger pointer">删除</div>
-              </Popup>
             </div>
           );
         },
