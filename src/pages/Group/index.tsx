@@ -8,25 +8,14 @@ import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
 import ManageDlg from './manageDlg';
+import AppDlg from './appDlg';
 import './style.less';
 
 export default () => {
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      groupName: '',
-    },
     reqMethod: getGroupList,
-    dealReqData: useCallback((args) => {
-      const { groupName, currentPage } = args;
-      const param: any = { currentPage };
-      if (groupName) {
-        param.groupName = groupName;
-      }
-      return param;
-    }, []),
   });
 
-  const formRef: any = useRef();
   const dlgRef: any = useRef();
 
   const getList = useCallback(
@@ -88,8 +77,18 @@ export default () => {
               >
                 成员管理
               </div>
-              <div className="color-primary pointer" onClick={() => {}}>
-                应用列表
+              <div
+                className="color-primary pointer"
+                onClick={() => {
+                  dlgRef.current = Dialog.show({
+                    content: <AppDlg {...{ closeDlg, info: meta }} />,
+                    title: '应用管理',
+                    innerClassName: 'dialog-side',
+                    position: 'right',
+                  });
+                }}
+              >
+                应用管理
               </div>
               <div
                 className="color-primary pointer"
@@ -131,26 +130,6 @@ export default () => {
           新建分组
         </Button>
       </div>
-      {/*  */}
-      <Form
-        layout="horizontal"
-        getInstance={(i) => {
-          formRef.current = i;
-        }}
-      >
-        <Form.Item name="groupName" label="组名：">
-          <Input maxLength={50} />
-        </Form.Item>
-        <Button
-          className="ml16 vertical-align-middle"
-          onClick={() => {
-            const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, groupName: values.groupName }));
-          }}
-        >
-          搜索
-        </Button>
-      </Form>
       {/*  */}
       <div className="text-align-right mb8">
         <Pagination
