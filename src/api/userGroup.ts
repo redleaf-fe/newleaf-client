@@ -1,6 +1,6 @@
 import req from './request';
 
-const prefix = 'userApp';
+const prefix = 'userGroup';
 
 export const getAuthList = (data) => req({ url: `${prefix}/list`, data });
 
