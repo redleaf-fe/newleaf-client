@@ -52,7 +52,7 @@ export default () => {
         grow: 1,
       },
       {
-        title: '最后更新时间',
+        title: '更新时间',
         columnKey: 'updatedAt',
         width: '180px',
         render({ meta }) {
