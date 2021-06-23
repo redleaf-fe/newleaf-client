@@ -1,6 +1,8 @@
 import React, { useCallback, useRef, useMemo } from 'react';
 import { Form, Button, Table, Dialog, Message, Popup, Input } from 'redleaf-rc';
-import { getAppList, appDetail, deleteApp } from '@/api/app';
+import { appDetail } from '@/api/app';
+import { getGroupList } from '@/api/group';
+import { accessLevelMap } from '@/const';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
@@ -14,7 +16,7 @@ export default () => {
     reqData: {
       appName: '',
     },
-    reqMethod: getAppList,
+    reqMethod: getGroupList,
     dealReqData: useCallback((args) => {
       const { appName, currentPage } = args;
       const param: any = { currentPage };
@@ -42,35 +44,22 @@ export default () => {
   const columns = useMemo(
     () => [
       {
-        title: '应用名称',
-        columnKey: 'appName',
-        grow: 1,
+        title: '分组名称',
+        columnKey: 'source_name',
+        width: '400px',
       },
       {
-        title: 'appId',
-        columnKey: 'id',
-        grow: 1,
-      },
-      {
-        title: '最后更新时间',
-        columnKey: 'updatedAt',
-        width: '180px',
+        title: '权限',
+        columnKey: 'access_level',
+        width: '400px',
         render({ meta }) {
-          return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
-        },
-      },
-      {
-        title: '仓库地址',
-        columnKey: 'git',
-        width: '30%',
-        render({ meta }) {
-          return <div className="gitAddress">{meta.git}</div>;
+          return <div>{accessLevelMap[meta.access_level]}</div>;
         },
       },
       {
         title: '操作',
         columnKey: 'op',
-        width: '100px',
+        grow: 1,
         render({ meta }) {
           return (
             <div className="operate">
@@ -88,7 +77,7 @@ export default () => {
                 成员管理
               </div>
               <div className="color-primary pointer" onClick={() => {}}>
-                部署配置
+                应用列表
               </div>
               <div
                 className="color-primary pointer"
@@ -109,20 +98,6 @@ export default () => {
               >
                 编辑
               </div>
-              <Popup
-                onOk={() => {
-                  deleteApp({ id: meta.id })
-                    .then((res) => {
-                      Message.show({ title: res.message });
-                      getList(1);
-                    })
-                    .catch((e) => {
-                      Message.show({ title: e.message });
-                    });
-                }}
-              >
-                <div className="color-danger pointer">删除</div>
-              </Popup>
             </div>
           );
         },
