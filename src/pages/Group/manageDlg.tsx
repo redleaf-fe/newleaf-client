@@ -1,52 +1,36 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Button, Form, Table, Message, Popup, Select } from 'redleaf-rc';
-import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
-import { getAllAuth, saveAuth, deleteAuth } from '@/api/userApp';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { Button, Form, Table, Message, Popup, Select, Input, Dialog } from 'redleaf-rc';
+import { getAuthList, saveAuth, deleteAuth } from '@/api/userGroup';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
-import { getUserDataByName } from '@/utils';
+import { accessLevelMap } from '@/const';
 
-const authMap = [
-  {
-    value: 'admin',
-    text: '管理员',
-  },
-  {
-    value: 'develop',
-    text: '开发',
-  },
-  {
-    value: 'view',
-    text: '浏览',
-  },
-];
+import AddUserDlg from './addUserDlg';
 
-const defaultAuth = 'develop';
+const authMap = Object.entries(accessLevelMap).map((v) => ({ value: v[0], text: v[1] }));
 
 export default (props) => {
-  const { appInfo } = props;
-  const { appName, id } = appInfo || {};
-  const [options, setOptions] = useState([]);
+  const { info } = props;
+  const { source_id } = info || {};
   const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
-      id,
+      name: '',
     },
-    reqMethod: getAllAuth,
-  });
-
-  const getUserData = useThrottle((val) => {
-    getUserDataByName(val)
-      .then((res) => {
-        if (res && res.length > 0) {
-          setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
+    reqMethod: getAuthList,
+    dealReqData: useCallback(
+      (args) => {
+        const { name, currentPage } = args;
+        const param: any = { currentPage, id: source_id };
+        if (name) {
+          param.name = name;
         }
-      })
-      .catch((e) => {
-        Message.show({ title: e.message });
-      });
-  }, 200);
+        return param;
+      },
+      [source_id],
+    ),
+  });
 
   const changeAuth = useCallback(
     (param) => {
@@ -62,6 +46,16 @@ export default (props) => {
     [setFetchQuery],
   );
 
+  const addAuth = useCallback(
+    (uid) => {
+      changeAuth({
+        groupId: source_id,
+        uid,
+      });
+    },
+    [source_id, changeAuth],
+  );
+
   const columns = useMemo(
     () => [
       {
@@ -71,25 +65,21 @@ export default (props) => {
       },
       {
         title: '权限',
-        columnKey: 'auth',
+        columnKey: 'access',
         grow: 1,
         render({ meta }) {
           return (
             <Select
-              value={[meta.auth]}
+              value={[String(meta.access_level)]}
               options={authMap}
               showClearIcon={false}
               showSearch={false}
               onChange={({ meta: changeData }) => {
-                changeAuth([
-                  {
-                    appName,
-                    appId: id,
-                    username: meta.username,
-                    uid: meta.uid,
-                    auth: changeData[0].value,
-                  },
-                ]);
+                changeAuth({
+                  groupId: source_id,
+                  gitUid: meta.id,
+                  access: changeData[0].value,
+                });
               }}
             />
           );
@@ -104,8 +94,8 @@ export default (props) => {
             <Popup
               onOk={() => {
                 deleteAuth({
-                  appId: id,
-                  uid: meta.uid,
+                  gitUid: meta.id,
+                  groupId: source_id,
                 })
                   .then((res) => {
                     Message.show({
@@ -126,41 +116,47 @@ export default (props) => {
         },
       },
     ],
-    [],
+    [changeAuth, setFetchQuery, source_id],
   );
 
   return (
     <div className="manage-container">
+      <div className="mb16">
+        <Button
+          onClick={() => {
+            Dialog.show({
+              maskClosable: true,
+              content: (
+                <AddUserDlg
+                  {...{
+                    addAuth,
+                  }}
+                />
+              ),
+              title: '添加成员',
+            });
+          }}
+        >
+          添加成员
+        </Button>
+      </div>
       <Form
         layout="horizontal"
         getInstance={(i) => {
           formRef.current = i;
         }}
       >
-        <Form.Item label="用户名：" name="user">
-          <Select type="multi" options={options} onSearch={getUserData} />
+        <Form.Item label="用户名：" name="name">
+          <Input maxLength={20} />
         </Form.Item>
         <Button
           className="ml16"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            if (values.user && values.user.length > 0) {
-              changeAuth(
-                values.user.map((v) => {
-                  const { username, uid } = JSON.parse(v);
-                  return {
-                    appName,
-                    appId: id,
-                    username,
-                    uid,
-                    auth: defaultAuth,
-                  };
-                }),
-              );
-            }
+            setFetchQuery((t) => ({ ...t, name: values.name }));
           }}
         >
-          添加
+          搜索
         </Button>
       </Form>
       <Table columns={columns} datasets={pageData.data} bordered="row" />
