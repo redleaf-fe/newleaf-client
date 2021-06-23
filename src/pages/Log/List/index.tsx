@@ -90,13 +90,12 @@ export default () => {
       {appList.reqed && (
         <Form
           layout="horizontal"
-          className="log-form"
-          defaultValue={{ appName: [appList.data[0].value] }}
+          defaultValue={{ app: appList.data[0] ? [appList.data[0].value] : [] }}
           getInstance={(i) => {
             formRef.current = i;
           }}
         >
-          <Form.Item name="appName" label="应用名称：">
+          <Form.Item name="app" label="应用名称：">
             <Select options={appList.data} />
           </Form.Item>
           <Form.Item name="datetime" label="时间：">
@@ -113,8 +112,8 @@ export default () => {
               className="submit vertical-align-middle"
               onClick={() => {
                 const { values } = formRef.current.getValues();
-                const { appName, datetime, like, type } = values || {};
-                setFetchQuery((t) => ({ ...t, appId: appName[0], datetime, like, type, currentPage: 1 }));
+                const { app, datetime, like, type } = values || {};
+                setFetchQuery((t) => ({ ...t, appId: app[0], datetime, like, type, currentPage: 1 }));
               }}
             >
               搜索
