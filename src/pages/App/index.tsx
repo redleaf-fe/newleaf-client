@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useMemo } from 'react';
-import { Form, Button, Table, Dialog, Message, Popup, Input } from 'redleaf-rc';
+import { Form, Button, Table, Dialog, Message, Input } from 'redleaf-rc';
 import { getAppList, appDetail } from '@/api/app';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
