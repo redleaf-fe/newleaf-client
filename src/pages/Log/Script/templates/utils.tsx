@@ -1,5 +1,5 @@
 // 工具方法
-export default function ({ lcTimeBase, lcTimeFloat }) {
+export default function () {
   return `
   function save(info) {
     var data = JSON.parse(lc.getItem(lcName) || '[]');
