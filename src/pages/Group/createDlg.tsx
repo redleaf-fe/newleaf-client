@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, Input, Form, Message } from 'redleaf-rc';
-import { saveApp } from '@/api/app';
+import { saveGroup } from '@/api/group';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
@@ -10,15 +10,15 @@ export default (props) => {
 
   return (
     <Form
-      className="create-container dialog-center"
+      className="create-container"
       defaultValue={info}
       getInstance={(i) => {
         formRef.current = i;
       }}
     >
       <Form.Item
-        label="应用名称："
-        name="appName"
+        label="分组名称："
+        name="name"
         showRequiredMark
         validators={[
           {
@@ -29,11 +29,8 @@ export default (props) => {
       >
         <Input maxLength={20} showCount />
       </Form.Item>
-      <Form.Item label="应用描述：" name="desc">
+      <Form.Item label="描述：" name="description">
         <Input type="textarea" rows={5} maxLength={100} showCount />
-      </Form.Item>
-      <Form.Item label="仓库地址：" name="git">
-        <Input type="textarea" rows={5} maxLength={200} showCount />
       </Form.Item>
       <div className="btns">
         <Button
@@ -47,7 +44,7 @@ export default (props) => {
             if (info.id) {
               values.id = info.id;
             }
-            saveApp(values)
+            saveGroup(values)
               .then((res) => {
                 closeDlg?.();
                 getList?.();
