@@ -3,37 +3,40 @@ import { Button, Form, Table, Message, Popup, Select, Input, Dialog } from 'redl
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import { accessLevelMap } from '@/const';
+import { getMembersInNamespace, saveUsersToNamespace, removeUserFromNamespace } from '@/api/user';
 
 import AddUserDlg from './addUserDlg';
 
 const authMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: accessLevelMap[v] }));
 
 export default (props) => {
-  const { info, getAuthList, saveAuth, deleteAuth } = props;
+  const { info, type } = props;
   const { source_id } = info || {};
   const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
       name: '',
+      type,
     },
-    reqMethod: getAuthList,
+    reqMethod: getMembersInNamespace,
     dealReqData: useCallback(
       (args) => {
         const { name, currentPage } = args;
-        const param: any = { currentPage, id: source_id };
+        const param: any = { currentPage, id: source_id, type };
         if (name) {
           param.name = name;
         }
         return param;
       },
-      [source_id],
+      [source_id, type],
     ),
   });
 
   const changeAuth = useCallback(
     (param) => {
-      saveAuth(param)
+      param.type = type;
+      saveUsersToNamespace(param)
         .then((res) => {
           Message.show({ title: res.message });
           setFetchQuery((t) => ({ ...t, currentPage: t.currentPage }));
@@ -42,7 +45,7 @@ export default (props) => {
           Message.show({ title: e.message });
         });
     },
-    [setFetchQuery, saveAuth],
+    [setFetchQuery, type],
   );
 
   const addAuth = useCallback(
@@ -92,9 +95,10 @@ export default (props) => {
           return (
             <Popup
               onOk={() => {
-                deleteAuth({
+                removeUserFromNamespace({
                   gitUid: meta.id,
                   id: source_id,
+                  type,
                 })
                   .then((res) => {
                     Message.show({
@@ -115,7 +119,7 @@ export default (props) => {
         },
       },
     ],
-    [changeAuth, setFetchQuery, source_id, deleteAuth],
+    [changeAuth, setFetchQuery, source_id, type],
   );
 
   return (
@@ -152,7 +156,7 @@ export default (props) => {
           className="ml16"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, name: values.name }));
+            setFetchQuery((t) => ({ ...t, name: values.name, currentPage: 1 }));
           }}
         >
           搜索
