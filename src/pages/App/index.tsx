@@ -1,25 +1,27 @@
 import React, { useCallback, useRef, useMemo } from 'react';
 import { Form, Button, Table, Dialog, Message, Input } from 'redleaf-rc';
-import { getAppList, appDetail } from '@/api/app';
+import { getAppList, getAppDetail, saveApp } from '@/api/app';
+import { getAuthList, saveAuth, deleteAuth } from '@/api/userApp';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
+import { accessLevelMap } from '@/const';
 
-import CreateDlg from './createDlg';
-import ManageDlg from './manageDlg';
+import CreateDlg from '../Namespace/createDlg';
+import ManageDlg from '../Namespace/manageDlg';
 import './style.less';
 
 export default () => {
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
-      appName: '',
+      name: '',
     },
     reqMethod: getAppList,
     dealReqData: useCallback((args) => {
-      const { appName, currentPage } = args;
+      const { name, currentPage } = args;
       const param: any = { currentPage };
-      if (appName) {
-        param.appName = appName;
+      if (name) {
+        param.name = name;
       }
       return param;
     }, []),
@@ -43,34 +45,42 @@ export default () => {
     () => [
       {
         title: '应用名称',
-        columnKey: 'appName',
-        grow: 1,
-      },
-      {
-        title: 'appId',
-        columnKey: 'id',
+        columnKey: 'source_name',
         grow: 1,
       },
       {
         title: '更新时间',
         columnKey: 'updatedAt',
-        width: '180px',
+        width: 200,
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
       },
       {
-        title: '仓库地址',
+        title: '编辑人',
+        columnKey: 'updater',
+        width: 200,
+      },
+      {
+        title: 'git地址',
         columnKey: 'git',
-        width: '30%',
+        width: 200,
         render({ meta }) {
           return <div className="gitAddress">{meta.git}</div>;
         },
       },
       {
+        title: '权限',
+        columnKey: 'access_level',
+        width: 200,
+        render({ meta }) {
+          return <div>{accessLevelMap[meta.access_level]}</div>;
+        },
+      },
+      {
         title: '操作',
         columnKey: 'op',
-        width: '100px',
+        width: 100,
         render({ meta }) {
           return (
             <div className="operate">
@@ -78,7 +88,7 @@ export default () => {
                 className="color-primary pointer"
                 onClick={() => {
                   dlgRef.current = Dialog.show({
-                    content: <ManageDlg {...{ closeDlg, appInfo: meta }} />,
+                    content: <ManageDlg {...{ closeDlg, info: meta, getAuthList, saveAuth, deleteAuth }} />,
                     title: '成员管理',
                     innerClassName: 'dialog-side',
                     position: 'right',
@@ -93,12 +103,11 @@ export default () => {
               <div
                 className="color-primary pointer"
                 onClick={() => {
-                  appDetail({ id: meta.id })
+                  getAppDetail({ id: meta.source_id })
                     .then((res) => {
                       res.desc = res.desc || '';
-                      res.git = res.git || '';
                       dlgRef.current = Dialog.show({
-                        content: <CreateDlg {...{ closeDlg, getList, info: { ...res, id: meta.id } }} />,
+                        content: <CreateDlg {...{ closeDlg, getList, save: saveApp, info: { ...res, id: meta.source_id } }} />,
                         title: '编辑应用',
                       });
                     })
@@ -118,12 +127,12 @@ export default () => {
   );
 
   return (
-    <div className="applist-container">
+    <div className="app-container">
       <div className="mb16">
         <Button
           onClick={() => {
             dlgRef.current = Dialog.show({
-              content: <CreateDlg {...{ closeDlg, getList }} />,
+              content: <CreateDlg {...{ closeDlg, getList, save: saveApp }} />,
               title: '新建应用',
             });
           }}
@@ -138,28 +147,20 @@ export default () => {
           formRef.current = i;
         }}
       >
-        <Form.Item name="appName" label="应用名称：">
-          <Input maxLength={50} />
+        <Form.Item name="name" label="应用名称：">
+          <Input maxLength={20} />
         </Form.Item>
         <Button
           className="ml16 vertical-align-middle"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, appName: values.appName }));
+            setFetchQuery((t) => ({ ...t, name: values.name }));
           }}
         >
           搜索
         </Button>
       </Form>
       {/*  */}
-      <div className="text-align-right mb8">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
       <Table columns={columns} datasets={pageData.data} bordered="row" />
       <div className="text-align-right">
         <Pagination
