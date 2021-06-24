@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useMemo } from 'react';
 import { Form, Button, Table, Dialog, Message, Input } from 'redleaf-rc';
 import { getGroupList, getGroupDetail, saveGroup } from '@/api/group';
-import { getAuthList, saveAuth, deleteAuth } from '@/api/userGroup';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
@@ -63,14 +62,6 @@ export default () => {
         width: 200,
       },
       {
-        title: 'git地址',
-        columnKey: 'git',
-        width: 200,
-        render({ meta }) {
-          return <div className="gitAddress">{meta.git}</div>;
-        },
-      },
-      {
         title: '权限',
         columnKey: 'access_level',
         width: 200,
@@ -89,7 +80,7 @@ export default () => {
                 className="color-primary pointer"
                 onClick={() => {
                   dlgRef.current = Dialog.show({
-                    content: <ManageDlg {...{ closeDlg, info: meta, getAuthList, saveAuth, deleteAuth }} />,
+                    content: <ManageDlg {...{ closeDlg, info: meta, type: 'group' }} />,
                     title: '成员管理',
                     innerClassName: 'dialog-side',
                     position: 'right',
@@ -165,7 +156,7 @@ export default () => {
           className="ml16 vertical-align-middle"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, name: values.name }));
+            setFetchQuery((t) => ({ ...t, name: values.name, currentPage: 1 }));
           }}
         >
           搜索
