@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Button, Table, Message, Popup, Select, Dialog } from 'redleaf-rc';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { Button, Form, Table, Message, Popup, Select, Input, Dialog } from 'redleaf-rc';
 import { getAuthList, saveAuth, deleteAuth } from '@/api/userGroup';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
@@ -12,6 +12,7 @@ const authMap = Object.entries(accessLevelMap).map((v) => ({ value: v[0], text: 
 export default (props) => {
   const { info } = props;
   const { source_id } = info || {};
+  const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
     reqData: {
@@ -87,7 +88,7 @@ export default (props) => {
       {
         title: '操作',
         columnKey: 'op',
-        width: '100px',
+        width: 100,
         render({ meta }) {
           return (
             <Popup
@@ -139,6 +140,25 @@ export default (props) => {
           添加成员
         </Button>
       </div>
+      <Form
+        layout="horizontal"
+        getInstance={(i) => {
+          formRef.current = i;
+        }}
+      >
+        <Form.Item label="用户名：" name="name">
+          <Input maxLength={20} />
+        </Form.Item>
+        <Button
+          className="ml16"
+          onClick={() => {
+            const { values } = formRef.current.getValues();
+            setFetchQuery((t) => ({ ...t, name: values.name }));
+          }}
+        >
+          搜索
+        </Button>
+      </Form>
       <Table columns={columns} datasets={pageData.data} bordered="row" />
       <div className="text-align-right">
         <Pagination
