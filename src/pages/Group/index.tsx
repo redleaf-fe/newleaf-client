@@ -1,21 +1,34 @@
 import React, { useCallback, useRef, useMemo } from 'react';
 import { Form, Button, Table, Dialog, Message, Input } from 'redleaf-rc';
-import { getGroupList, getGroupDetail } from '@/api/group';
-import { accessLevelMap } from '@/const';
+import { getGroupList, getGroupDetail, saveGroup } from '@/api/group';
+import { getAuthList, saveAuth, deleteAuth } from '@/api/userGroup';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
+import { accessLevelMap } from '@/const';
 
-import CreateDlg from './createDlg';
-import ManageDlg from './manageDlg';
+import CreateDlg from '../Namespace/createDlg';
+import ManageDlg from '../Namespace/manageDlg';
 import AppDlg from './appDlg';
 import './style.less';
 
 export default () => {
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+    reqData: {
+      name: '',
+    },
     reqMethod: getGroupList,
+    dealReqData: useCallback((args) => {
+      const { name, currentPage } = args;
+      const param: any = { currentPage };
+      if (name) {
+        param.name = name;
+      }
+      return param;
+    }, []),
   });
 
+  const formRef: any = useRef();
   const dlgRef: any = useRef();
 
   const getList = useCallback(
@@ -50,6 +63,14 @@ export default () => {
         width: 200,
       },
       {
+        title: 'git地址',
+        columnKey: 'git',
+        width: 200,
+        render({ meta }) {
+          return <div className="gitAddress">{meta.git}</div>;
+        },
+      },
+      {
         title: '权限',
         columnKey: 'access_level',
         width: 200,
@@ -68,7 +89,7 @@ export default () => {
                 className="color-primary pointer"
                 onClick={() => {
                   dlgRef.current = Dialog.show({
-                    content: <ManageDlg {...{ closeDlg, info: meta }} />,
+                    content: <ManageDlg {...{ closeDlg, info: meta, getAuthList, saveAuth, deleteAuth }} />,
                     title: '成员管理',
                     innerClassName: 'dialog-side',
                     position: 'right',
@@ -97,7 +118,7 @@ export default () => {
                     .then((res) => {
                       res.desc = res.desc || '';
                       dlgRef.current = Dialog.show({
-                        content: <CreateDlg {...{ closeDlg, getList, info: { ...res, id: meta.source_id } }} />,
+                        content: <CreateDlg {...{ closeDlg, getList, save: saveGroup, info: { ...res, id: meta.source_id } }} />,
                         title: '编辑应用',
                       });
                     })
@@ -122,7 +143,7 @@ export default () => {
         <Button
           onClick={() => {
             dlgRef.current = Dialog.show({
-              content: <CreateDlg {...{ closeDlg, getList }} />,
+              content: <CreateDlg {...{ closeDlg, getList, save: saveGroup }} />,
               title: '新建分组',
             });
           }}
@@ -131,14 +152,26 @@ export default () => {
         </Button>
       </div>
       {/*  */}
-      <div className="text-align-right mb8">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
+      <Form
+        layout="horizontal"
+        getInstance={(i) => {
+          formRef.current = i;
+        }}
+      >
+        <Form.Item name="name" label="分组名称：">
+          <Input maxLength={20} />
+        </Form.Item>
+        <Button
+          className="ml16 vertical-align-middle"
+          onClick={() => {
+            const { values } = formRef.current.getValues();
+            setFetchQuery((t) => ({ ...t, name: values.name }));
+          }}
+        >
+          搜索
+        </Button>
+      </Form>
+      {/*  */}
       <Table columns={columns} datasets={pageData.data} bordered="row" />
       <div className="text-align-right">
         <Pagination
