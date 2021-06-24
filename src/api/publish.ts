@@ -1,6 +1,6 @@
 import req from './request';
 
-const prefix = 'appPublish';
+const prefix = 'publish';
 
 export const getPubishList = (data) => req({ url: `${prefix}/list`, data });
 
