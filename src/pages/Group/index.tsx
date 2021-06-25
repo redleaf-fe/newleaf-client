@@ -9,13 +9,11 @@ import { accessLevelMap } from '@/const';
 import CreateDlg from '../Namespace/createDlg';
 import ManageDlg from '../Namespace/manageDlg';
 import AppDlg from './appDlg';
+
 import './style.less';
 
 export default () => {
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      name: '',
-    },
     reqMethod: getGroupList,
     dealReqData: useCallback((args) => {
       const { name, currentPage } = args;
