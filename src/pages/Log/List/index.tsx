@@ -35,12 +35,6 @@ export default () => {
   });
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      appId: '',
-      datetime: '',
-      like: '',
-      type: '',
-    },
     reqMethod: getLog,
     dealReqData: useCallback((args) => {
       const { appId, currentPage, like, type } = args;
@@ -73,7 +67,7 @@ export default () => {
         if (res.count > 0) {
           setAppList((t) => ({
             ...t,
-            data: res.rows.map((v) => ({ value: v.id, text: v.appName })),
+            data: res.rows.map((v) => ({ value: v.id, text: v.name })),
             reqed: true,
           }));
           setFetchQuery((t) => ({ ...t, appId: res.rows[0].id }));
