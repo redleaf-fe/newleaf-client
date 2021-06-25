@@ -1,9 +1,10 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Button, Select, Form, Message } from 'redleaf-rc';
 import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
-
+import { required, requiredMsg } from '@/utils/validators';
 import { getUserDataByName } from '@/utils';
 import { formUnpass } from '@/const';
+
 
 export default (props) => {
   const { addAuth } = props;
@@ -27,17 +28,26 @@ export default (props) => {
 
   return (
     <Form
-      className="add-container"
+      className="adduser-dlg"
       layout="horizontal"
       getInstance={(i) => {
         formRef.current = i;
       }}
     >
-      <Form.Item label="用户名：" name="user">
-        <Select options={options} onSearch={getUserData} />
+      <Form.Item
+        label="用户名："
+        name="user"
+        validators={[
+          {
+            rule: required,
+            message: requiredMsg,
+          },
+        ]}
+      >
+        <Select options={options} onSearch={getUserData} placeholder="输入要搜索的用户名" />
       </Form.Item>
       <Button
-        className="ml16"
+        className="ml16 submit-btn"
         onClick={() => {
           const { values, errors } = formRef.current.getValues();
           if (Object.keys(errors).length > 0) {
