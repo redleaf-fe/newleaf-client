@@ -8,6 +8,3 @@ export const saveApp = (data) => req({ url: `${prefix}/save`, method: 'post', da
 
 export const getAppDetail = (data) => req({ url: `${prefix}/detail`, data });
 
-export const saveMember = (data) => req({ url: `${prefix}/saveMember`, data });
-
-export const deleteMember = (data) => req({ url: `${prefix}/deleteMember`, data });
