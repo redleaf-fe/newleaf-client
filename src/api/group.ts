@@ -8,6 +8,9 @@ export const getGroupDetail = (data) => req({ url: `${prefix}/detail`, data });
 
 export const saveGroup = (data) => req({ url: `${prefix}/save`, method: 'post', data });
 
-export const saveMember = (data) => req({ url: `${prefix}/saveMember`, data });
+// 应用操作
+export const getAppInGroup = (data) => req({ url: `${prefix}/save`, data });
 
-export const deleteMember = (data) => req({ url: `${prefix}/deleteMember`, data });
+export const shareAppWithGroup = (data) => req({ url: `${prefix}/save`, method: 'post', data });
+
+export const delShareAppWithGroup = (data) => req({ url: `${prefix}/save`, method: 'post', data });
