@@ -12,9 +12,6 @@ import './style.less';
 
 export default () => {
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      name: '',
-    },
     reqMethod: getAppList,
     dealReqData: useCallback((args) => {
       const { name, currentPage } = args;
