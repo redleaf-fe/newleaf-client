@@ -24,7 +24,7 @@
     "dev": "icejs start --port 3020",
     "build": "icejs build",
     "lint": "npm run eslint && npm run stylelint",
-    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx ./",
     "eslint:fix": "npm run eslint -- --fix",
     "stylelint": "stylelint \"**/*.{css,scss,less}\"",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0",
