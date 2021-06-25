@@ -3,13 +3,16 @@ import { Button, Input, Form, Message } from 'redleaf-rc';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
+import './style.less';
+
+
 export default (props) => {
   const { closeDlg, getList, info = {}, save } = props;
   const formRef: any = useRef();
 
   return (
     <Form
-      className="create-container"
+      className="create-dlg"
       defaultValue={info}
       getInstance={(i) => {
         formRef.current = i;

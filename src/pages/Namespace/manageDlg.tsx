@@ -6,6 +6,7 @@ import { accessLevelMap } from '@/const';
 import { getMembersInNamespace, saveUsersToNamespace, removeUserFromNamespace } from '@/api/user';
 
 import AddUserDlg from './addUserDlg';
+import './style.less';
 
 const authMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: accessLevelMap[v] }));
 
@@ -15,10 +16,6 @@ export default (props) => {
   const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      name: '',
-      type,
-    },
     reqMethod: getMembersInNamespace,
     dealReqData: useCallback(
       (args) => {
@@ -123,7 +120,7 @@ export default (props) => {
   );
 
   return (
-    <div className="manage-container">
+    <div className="manage-dlg">
       <div className="mb16">
         <Button
           onClick={() => {
