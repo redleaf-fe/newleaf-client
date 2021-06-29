@@ -21,11 +21,14 @@ export default ({
     totalItems: 0,
     data: [],
   });
+  const [loading, setLoading] = useState(false);
 
   const fetchMethod = useCallback(
     (req) => {
+      setLoading(true);
       reqMethod(typeof dealReqData === 'function' ? dealReqData(req) : req)
         .then((res2) => {
+          setLoading(false);
           const { count, rows } = res2;
           setPageData({
             totalItems: count,
@@ -33,6 +36,7 @@ export default ({
           });
         })
         .catch((e) => {
+          setLoading(false);
           Message.show({ title: e.message });
         });
     },
@@ -53,5 +57,5 @@ export default ({
     setFetchQuery((t) => ({ ...t, currentPage: page }));
   }, []);
 
-  return { changePage, pageData, setFetchQuery, fetchQuery };
+  return { changePage, pageData, setFetchQuery, fetchQuery, loading };
 };
