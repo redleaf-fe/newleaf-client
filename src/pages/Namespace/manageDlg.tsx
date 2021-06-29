@@ -15,7 +15,7 @@ export default (props) => {
   const { source_id } = info || {};
   const formRef: any = useRef();
 
-  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqMethod: getMembersInNamespace,
     dealReqData: useCallback(
       (args) => {
@@ -160,7 +160,7 @@ export default (props) => {
         </Button>
       </Form>
       {/*  */}
-      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      <Table columns={columns} datasets={pageData.data} loading={loading} />
       <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}

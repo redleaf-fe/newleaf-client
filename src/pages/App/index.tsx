@@ -11,7 +11,7 @@ import ManageDlg from '../Namespace/manageDlg';
 import './style.less';
 
 export default () => {
-  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqMethod: getAppList,
     dealReqData: useCallback((args) => {
       const { name, currentPage } = args;
@@ -95,7 +95,9 @@ export default () => {
                     .then((res) => {
                       res.desc = res.desc || '';
                       dlgRef.current = Dialog.show({
-                        content: <CreateDlg {...{ closeDlg, getList, save: saveApp, info: { ...res, id: meta.source_id } }} />,
+                        content: (
+                          <CreateDlg {...{ closeDlg, getList, save: saveApp, info: { ...res, id: meta.source_id } }} />
+                        ),
                         title: '编辑应用',
                       });
                     })
@@ -149,7 +151,7 @@ export default () => {
         </Button>
       </Form>
       {/*  */}
-      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      <Table columns={columns} datasets={pageData.data} loading={loading} />
       <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
