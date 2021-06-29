@@ -2,6 +2,8 @@ import req from './request';
 
 const prefix = 'app';
 
+export const getAppByName = (data) => req({ url: `${prefix}/getByName`, data });
+
 export const getAppList = (data) => req({ url: `${prefix}/list`, data });
 
 export const saveApp = (data) => req({ url: `${prefix}/save`, method: 'post', data });
