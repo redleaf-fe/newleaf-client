@@ -1,31 +1,42 @@
 import React, { useCallback, useRef, useMemo } from 'react';
-import { Button, Table, Input, Form, Message } from 'redleaf-rc';
+import { Button, Table, Input, Form, Message, Dialog, Popup } from 'redleaf-rc';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import { getAppInGroup, shareAppWithGroup, delShareAppWithGroup } from '@/api/group';
-import dayjs from 'dayjs';
+
+import AddAppDlg from './addAppDlg';
 
 export default (props) => {
   const { info } = props;
   const { source_id } = info;
-  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqMethod: getAppInGroup,
-    dealReqData: useCallback((args) => {
-      const { name, currentPage } = args;
-      const param: any = { currentPage, id: source_id };
-      if (name) {
-        param.name = name;
-      }
-      return param;
-    }, [source_id]),
+    dealReqData: useCallback(
+      (args) => {
+        const { name, currentPage } = args;
+        const param: any = { currentPage, id: source_id };
+        if (name) {
+          param.name = name;
+        }
+        return param;
+      },
+      [source_id],
+    ),
   });
   const formRef: any = useRef();
+
+  const getList = useCallback(
+    (page?) => {
+      setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
+    },
+    [setFetchQuery],
+  );
 
   const columns = useMemo(
     () => [
       {
         title: '应用名称',
-        columnKey: 'source_name',
+        columnKey: 'name',
         grow: 1,
       },
       {
@@ -35,19 +46,20 @@ export default (props) => {
         render({ meta }) {
           return (
             <div className="operate">
-              <div
-                className="color-primary pointer"
-                onClick={() => {
-                  // dlgRef.current = Dialog.show({
-                  //   content: <ManageDlg {...{ closeDlg, info: meta, type: 'group' }} />,
-                  //   title: '成员管理',
-                  //   innerClassName: 'dialog-side',
-                  //   position: 'right',
-                  // });
+              <Popup
+                onOk={() => {
+                  delShareAppWithGroup({ id: meta.id, group_id: info.source_id })
+                    .then((res) => {
+                      getList();
+                      Message.show({ title: res.message });
+                    })
+                    .catch((e) => {
+                      Message.show({ title: e.message });
+                    });
                 }}
               >
-                删除
-              </div>
+                <Button type="danger">删除</Button>
+              </Popup>
             </div>
           );
         },
@@ -61,10 +73,10 @@ export default (props) => {
       <div className="mb16">
         <Button
           onClick={() => {
-            // dlgRef.current = Dialog.show({
-            //   content: <CreateDlg {...{ closeDlg, getList, save: saveGroup }} />,
-            //   title: '新增应用',
-            // });
+            Dialog.show({
+              content: <AddAppDlg {...{ getList, save: shareAppWithGroup, info }} />,
+              title: '新增应用',
+            });
           }}
         >
           新增应用
@@ -91,7 +103,7 @@ export default (props) => {
         </Button>
       </Form>
       {/*  */}
-      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      <Table columns={columns} datasets={pageData.data} loading={loading} />
       <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
