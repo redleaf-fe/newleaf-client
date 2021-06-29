@@ -2,18 +2,17 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Button, Select, Form, Message } from 'redleaf-rc';
 import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
 import { required, requiredMsg } from '@/utils/validators';
-import { getUserDataByName } from '@/utils';
+import { getUserByName } from '@/api/user';
 import { formUnpass } from '@/const';
 
-
 export default (props) => {
-  const { addAuth } = props;
+  const { addUser } = props;
   const [options, setOptions] = useState([]);
   const formRef: any = useRef();
 
   const getUserData = useThrottle(
     useCallback((val) => {
-      getUserDataByName(val)
+      getUserByName({ username: val })
         .then((res) => {
           if (res && res.length > 0) {
             setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
@@ -54,7 +53,7 @@ export default (props) => {
             Message.show({ title: formUnpass });
             return;
           }
-          addAuth(JSON.parse(values.user[0]).uid);
+          addUser(JSON.parse(values.user[0]).uid);
         }}
       >
         确定
