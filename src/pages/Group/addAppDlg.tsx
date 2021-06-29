@@ -2,20 +2,20 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Button, Select, Form, Message } from 'redleaf-rc';
 import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
 import { required, requiredMsg } from '@/utils/validators';
-import { getUserDataByName } from '@/utils';
+import { getAppByName } from '@/api/app';
 import { formUnpass } from '@/const';
 
 export default (props) => {
-  const { addAuth } = props;
+  const { save, info, getList } = props;
   const [options, setOptions] = useState([]);
   const formRef: any = useRef();
 
-  const getUserData = useThrottle(
+  const getAppData = useThrottle(
     useCallback((val) => {
-      getUserDataByName(val)
+      getAppByName({ name: val })
         .then((res) => {
           if (res && res.length > 0) {
-            setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
+            setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.source_name })));
           }
         })
         .catch((e) => {
@@ -34,8 +34,8 @@ export default (props) => {
       }}
     >
       <Form.Item
-        label="用户名："
-        name="user"
+        label="应用名："
+        name="app"
         validators={[
           {
             rule: required,
@@ -43,7 +43,7 @@ export default (props) => {
           },
         ]}
       >
-        <Select options={options} onSearch={getUserData} placeholder="输入要搜索的应用名" />
+        <Select options={options} onSearch={getAppData} placeholder="输入要搜索的应用名" />
       </Form.Item>
       <Button
         className="ml16 submit-btn"
@@ -53,7 +53,14 @@ export default (props) => {
             Message.show({ title: formUnpass });
             return;
           }
-          addAuth(JSON.parse(values.user[0]).uid);
+          save({ id: JSON.parse(values.app[0]).source_id, group_id: info.source_id })
+            .then((res) => {
+              getList();
+              Message.show({ title: res.message });
+            })
+            .catch((e) => {
+              Message.show({ title: e.message });
+            });
         }}
       >
         确定
