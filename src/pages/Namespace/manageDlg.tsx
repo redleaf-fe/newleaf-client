@@ -8,7 +8,7 @@ import { getMembersInNamespace, saveUsersToNamespace, removeUserFromNamespace } 
 import AddUserDlg from './addUserDlg';
 import './style.less';
 
-const authMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: accessLevelMap[v] }));
+const accessMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: accessLevelMap[v] }));
 
 export default (props) => {
   const { info, type } = props;
@@ -30,13 +30,13 @@ export default (props) => {
     ),
   });
 
-  const changeAuth = useCallback(
+  const changeAccess = useCallback(
     (param) => {
       param.type = type;
       saveUsersToNamespace(param)
         .then((res) => {
           Message.show({ title: res.message });
-          setFetchQuery((t) => ({ ...t, currentPage: t.currentPage }));
+          setFetchQuery((t) => ({ ...t }));
         })
         .catch((e) => {
           Message.show({ title: e.message });
@@ -45,14 +45,14 @@ export default (props) => {
     [setFetchQuery, type],
   );
 
-  const addAuth = useCallback(
+  const addUser = useCallback(
     (uid) => {
-      changeAuth({
+      changeAccess({
         id: source_id,
         uid,
       });
     },
-    [source_id, changeAuth],
+    [source_id, changeAccess],
   );
 
   const columns = useMemo(
@@ -70,11 +70,11 @@ export default (props) => {
           return (
             <Select
               value={[String(meta.access_level)]}
-              options={authMap}
+              options={accessMap}
               showClearIcon={false}
               showSearch={false}
               onChange={({ meta: changeData }) => {
-                changeAuth({
+                changeAccess({
                   id: source_id,
                   gitUid: meta.id,
                   access: changeData[0].value,
@@ -116,7 +116,7 @@ export default (props) => {
         },
       },
     ],
-    [changeAuth, setFetchQuery, source_id, type],
+    [changeAccess, setFetchQuery, source_id, type],
   );
 
   return (
@@ -129,7 +129,7 @@ export default (props) => {
               content: (
                 <AddUserDlg
                   {...{
-                    addAuth,
+                    addUser,
                   }}
                 />
               ),
