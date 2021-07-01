@@ -30,7 +30,7 @@ export default () => {
 
   const getList = useCallback(
     (page) => {
-      setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
+      setFetchQuery({ currentPage: page });
     },
     [setFetchQuery],
   );
@@ -158,7 +158,7 @@ export default () => {
           className="ml16 vertical-align-middle"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, name: values.name, currentPage: 1 }));
+            setFetchQuery({ name: values.name, currentPage: 1 });
           }}
         >
           搜索
