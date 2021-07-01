@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { getAppList } from '@/api/app';
+import { getAllApp } from '@/api/app';
 import { getLog } from '@/api/log';
-import { maxPageSize } from '@/const';
 import { Form, Select, Button, Message, DateTime, Input } from 'redleaf-rc';
 import usePageTable from '@/hooks/usePageTable';
 import DatetimeRange from '@/components/datetimeRange';
@@ -62,20 +61,20 @@ export default () => {
   const formRef: any = useRef();
 
   useEffect(() => {
-    getAppList({ currentPage: 1, pageSize: maxPageSize })
+    getAllApp()
       .then((res) => {
-        if (res.count > 0) {
+        if (res && res.length > 0) {
           setAppList((t) => ({
             ...t,
-            data: res.rows.map((v) => ({ value: v.id, text: v.name })),
+            data: res.map((v) => ({ value: String(v.source_id), text: v.source_name })),
             reqed: true,
           }));
-          setFetchQuery((t) => ({ ...t, appId: res.rows[0].id }));
+          setFetchQuery((t) => ({ ...t, appId: res[0].id }));
         }
       })
       .catch((e) => {
         setAppList((t) => ({ ...t, reqed: true }));
-        Message.show({ title: e.message });
+        Message.error(e.message);
       });
   }, [setFetchQuery]);
 
@@ -115,14 +114,6 @@ export default () => {
           </div>
         </Form>
       )}
-      <div className="text-align-right">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
 
       <div className="detail-container">
         {pageData.data.length > 0 ? (
