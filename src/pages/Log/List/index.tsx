@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAllApp } from '@/api/app';
 import { getLog } from '@/api/log';
 import { Form, Select, Button, Message, DateTime, Input } from 'redleaf-rc';
+import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
 import usePageTable from '@/hooks/usePageTable';
 import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
@@ -26,7 +27,7 @@ const logTypeArr = [
 ];
 
 export default () => {
-  const [appList, setAppList] = useState({
+  const [appList, setAppList] = useSafeState({
     count: 0,
     data: [],
     // 已请求
@@ -64,19 +65,18 @@ export default () => {
     getAllApp()
       .then((res) => {
         if (res && res.length > 0) {
-          setAppList((t) => ({
-            ...t,
+          setAppList({
             data: res.map((v) => ({ value: String(v.source_id), text: v.source_name })),
             reqed: true,
-          }));
-          setFetchQuery((t) => ({ ...t, appId: res[0].id }));
+          });
+          setFetchQuery({ appId: res[0].id });
         }
       })
       .catch((e) => {
-        setAppList((t) => ({ ...t, reqed: true }));
+        setAppList({ reqed: true });
         Message.error(e.message);
       });
-  }, [setFetchQuery]);
+  }, [setFetchQuery, setAppList]);
 
   return (
     <div className="log-container">
@@ -106,7 +106,7 @@ export default () => {
               onClick={() => {
                 const { values } = formRef.current.getValues();
                 const { app, datetime, like, type } = values || {};
-                setFetchQuery((t) => ({ ...t, appId: app[0], datetime, like, type, currentPage: 1 }));
+                setFetchQuery({ appId: app[0], datetime, like, type, currentPage: 1 });
               }}
             >
               搜索
