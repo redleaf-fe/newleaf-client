@@ -12,3 +12,7 @@ export const saveApp = (data) => req({ url: `${prefix}/save`, method: 'post', da
 
 export const getAppDetail = (data) => req({ url: `${prefix}/detail`, data });
 
+export const getAppBranch = (data) => req({ url: `${prefix}/branch`, data });
+
+export const getAppCommit = (data) => req({ url: `${prefix}/commit`, data });
+
