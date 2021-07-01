@@ -99,7 +99,7 @@ export default (props) => {
                 })
                   .then((res) => {
                     Message.success(res.message);
-                    setFetchQuery((t) => ({ ...t, currentPage: 1 }));
+                    setFetchQuery({ currentPage: 1 });
                   })
                   .catch((e) => {
                     Message.error(e.message);
@@ -149,7 +149,7 @@ export default (props) => {
           className="ml16"
           onClick={() => {
             const { values } = formRef.current.getValues();
-            setFetchQuery((t) => ({ ...t, name: values.name, currentPage: 1 }));
+            setFetchQuery({ name: values.name, currentPage: 1 });
           }}
         >
           搜索
