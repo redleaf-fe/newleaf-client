@@ -115,7 +115,7 @@ export default () => {
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
             if (Object.keys(errors).length > 0) {
-              Message.show({ title: formUnpass });
+              Message.error(formUnpass);
               return;
             }
 

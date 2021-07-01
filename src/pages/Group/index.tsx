@@ -116,7 +116,7 @@ export default () => {
                       });
                     })
                     .catch((e) => {
-                      Message.show({ title: e.message });
+                      Message.error(e.message);
                     });
                 }}
               >

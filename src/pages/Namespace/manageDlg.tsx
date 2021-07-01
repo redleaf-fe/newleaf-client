@@ -35,11 +35,11 @@ export default (props) => {
       param.type = type;
       saveUsersToNamespace(param)
         .then((res) => {
-          Message.show({ title: res.message });
+          Message.success(res.message);
           setFetchQuery((t) => ({ ...t }));
         })
         .catch((e) => {
-          Message.show({ title: e.message });
+          Message.error(e.message);
         });
     },
     [setFetchQuery, type],
@@ -98,15 +98,11 @@ export default (props) => {
                   type,
                 })
                   .then((res) => {
-                    Message.show({
-                      title: res.message,
-                    });
+                    Message.success(res.message);
                     setFetchQuery((t) => ({ ...t, currentPage: 1 }));
                   })
                   .catch((e) => {
-                    Message.show({
-                      title: e.message,
-                    });
+                    Message.error(e.message);
                   });
               }}
             >

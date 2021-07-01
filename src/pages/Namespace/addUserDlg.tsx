@@ -19,7 +19,7 @@ export default (props) => {
           }
         })
         .catch((e) => {
-          Message.show({ title: e.message });
+          Message.error(e.message);
         });
     }, []),
     200,
@@ -50,7 +50,7 @@ export default (props) => {
         onClick={() => {
           const { values, errors } = formRef.current.getValues();
           if (Object.keys(errors).length > 0) {
-            Message.show({ title: formUnpass });
+            Message.error(formUnpass);
             return;
           }
           addUser(JSON.parse(values.user[0]).uid);

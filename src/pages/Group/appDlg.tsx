@@ -51,10 +51,10 @@ export default (props) => {
                   delShareAppWithGroup({ id: meta.id, group_id: info.source_id })
                     .then((res) => {
                       getList();
-                      Message.show({ title: res.message });
+                      Message.success(res.message);
                     })
                     .catch((e) => {
-                      Message.show({ title: e.message });
+                      Message.error(e.message);
                     });
                 }}
               >

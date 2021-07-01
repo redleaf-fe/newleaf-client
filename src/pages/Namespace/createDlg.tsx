@@ -5,7 +5,6 @@ import { formUnpass } from '@/const';
 
 import './style.less';
 
-
 export default (props) => {
   const { closeDlg, getList, info = {}, save } = props;
   const formRef: any = useRef();
@@ -40,7 +39,7 @@ export default (props) => {
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
             if (Object.keys(errors).length > 0) {
-              Message.show({ title: formUnpass });
+              Message.error(formUnpass);
               return;
             }
             if (info.id) {
@@ -50,10 +49,10 @@ export default (props) => {
               .then((res) => {
                 closeDlg?.();
                 getList?.();
-                Message.show({ title: res.message });
+                Message.success(res.message);
               })
               .catch((e) => {
-                Message.show({ title: e.message });
+                Message.error(e.message);
               });
           }}
         >

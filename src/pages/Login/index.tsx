@@ -87,15 +87,15 @@ export default () => {
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
             if (Object.keys(errors).length > 0) {
-              Message.show({ title: formUnpass });
+              Message.error(formUnpass);
               return;
             }
             if (type === 'register' && values.password !== values.password2) {
-              Message.show({ title: '两次密码输入不一致' });
+              Message.error('两次密码输入不一致');
               return;
             }
             apiMap[type](values).catch((e) => {
-              Message.show({ title: e.message });
+              Message.error(e.message);
             });
           }}
         >

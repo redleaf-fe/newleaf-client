@@ -19,7 +19,7 @@ export default (props) => {
           }
         })
         .catch((e) => {
-          Message.show({ title: e.message });
+          Message.error(e.message);
         });
     }, []),
     200,
@@ -50,16 +50,16 @@ export default (props) => {
         onClick={() => {
           const { values, errors } = formRef.current.getValues();
           if (Object.keys(errors).length > 0) {
-            Message.show({ title: formUnpass });
+            Message.error(formUnpass);
             return;
           }
           save({ id: JSON.parse(values.app[0]).source_id, group_id: info.source_id })
             .then((res) => {
               getList();
-              Message.show({ title: res.message });
+              Message.success(res.message);
             })
             .catch((e) => {
-              Message.show({ title: e.message });
+              Message.error(e.message);
             });
         }}
       >

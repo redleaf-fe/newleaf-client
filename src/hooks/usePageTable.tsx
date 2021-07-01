@@ -37,7 +37,7 @@ export default ({
         })
         .catch((e) => {
           setLoading(false);
-          Message.show({ title: e.message });
+          Message.error(e.message);
         });
     },
     [dealReqData, reqMethod],
