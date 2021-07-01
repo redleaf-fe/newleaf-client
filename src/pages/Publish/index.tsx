@@ -1,7 +1,8 @@
 import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
 import { Form, Button, Table, Dialog, Message, Popup, Input, Select } from 'redleaf-rc';
-import { getPubishList, savePublish, deletePublish, publishDetail } from '@/api/appPublish';
-import { getAppList } from '@/api/app';
+import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
+import { getPubishList, savePublish, publishDetail } from '@/api/publish';
+import { getAllApp } from '@/api/app';
 import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
@@ -13,17 +14,13 @@ import ManageDlg from './manageDlg';
 import './style.less';
 
 export default () => {
-  const [appList, setAppList] = useState({
+  const [appList, setAppList] = useSafeState({
     count: 0,
     data: [],
     // 已请求
     reqed: false,
   });
-  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
-    reqData: {
-      publishName: '',
-      appId: '',
-    },
+  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqMethod: getPubishList,
     dealReqData: useCallback((args) => {
       const { appId, publishName, currentPage } = args;
@@ -42,26 +39,25 @@ export default () => {
   const dlgRef: any = useRef();
 
   useEffect(() => {
-    getAppList({ currentPage: 1, pageSize: maxPageSize })
+    getAllApp()
       .then((res) => {
-        if (res.count > 0) {
-          setAppList((t) => ({
-            ...t,
-            data: res.rows.map((v) => ({ value: v.id, text: v.appName })),
+        if (res && res.length > 0) {
+          setAppList({
+            data: res.map((v) => ({ value: String(v.source_id), text: v.source_name })),
             reqed: true,
-          }));
-          setFetchQuery((t) => ({ ...t, appId: res.rows[0].id }));
+          });
+          setFetchQuery({ appId: res[0].id });
         }
       })
       .catch((e) => {
-        setAppList((t) => ({ ...t, reqed: true }));
-        Message.show({ title: e.message });
+        setAppList({ reqed: true });
+        Message.error(e.message);
       });
-  }, [setFetchQuery]);
+  }, [setFetchQuery, setAppList]);
 
   const getList = useCallback(
     (page) => {
-      setFetchQuery((t) => ({ ...t, currentPage: page || t.currentPage }));
+      setFetchQuery({ currentPage: page });
     },
     [setFetchQuery],
   );
@@ -79,12 +75,12 @@ export default () => {
       },
       {
         title: '关联应用',
-        columnKey: 'appName',
+        columnKey: 'name',
       },
       {
-        title: '最后更新时间',
+        title: '更新时间',
         columnKey: 'updatedAt',
-        width: '180px',
+        width: 180,
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -92,7 +88,7 @@ export default () => {
       {
         title: '操作',
         columnKey: 'op',
-        width: '100px',
+        width: 100,
         render({ meta }) {
           return (
             <div className="operate">
@@ -118,33 +114,18 @@ export default () => {
                   publishDetail({ id: meta.id })
                     .then((res) => {
                       res.desc = res.desc || '';
-                      res.git = res.git || '';
                       dlgRef.current = Dialog.show({
                         content: <CreateDlg {...{ closeDlg, getList, info: { ...res, id: meta.id } }} />,
                         title: '编辑应用',
                       });
                     })
                     .catch((e) => {
-                      Message.show({ title: e.message });
+                      Message.error(e.message);
                     });
                 }}
               >
                 编辑
               </div>
-              <Popup
-                onOk={() => {
-                  deletePublish({ id: meta.id })
-                    .then((res) => {
-                      Message.show({ title: res.message });
-                      getList(1);
-                    })
-                    .catch((e) => {
-                      Message.show({ title: e.message });
-                    });
-                }}
-              >
-                <div className="color-danger pointer">删除</div>
-              </Popup>
             </div>
           );
         },
@@ -159,7 +140,7 @@ export default () => {
         <Button
           onClick={() => {
             dlgRef.current = Dialog.show({
-              content: <CreateDlg {...{ closeDlg, getList }} />,
+              content: <CreateDlg {...{ closeDlg, getList, appList: appList.data }} />,
               title: '新建发布',
             });
           }}
@@ -171,15 +152,15 @@ export default () => {
       {appList.reqed && (
         <Form
           layout="horizontal"
-          defaultValue={{ appName: [appList.data[0].value] }}
+          defaultValue={{ app: appList.data[0] ? [appList.data[0].value] : [] }}
           getInstance={(i) => {
             formRef.current = i;
           }}
         >
-          <Form.Item name="appName" label="应用名称：">
+          <Form.Item name="app" label="应用名称：">
             <Select options={appList.data} />
           </Form.Item>
-          <Form.Item name="datetime" label="时间：">
+          <Form.Item name="datetime" label="发布时间：">
             <DatetimeRange />
           </Form.Item>
           <Form.Item name="publishName" label="发布名称：">
@@ -189,7 +170,7 @@ export default () => {
             className="ml16 vertical-align-middle"
             onClick={() => {
               const { values } = formRef.current.getValues();
-              setFetchQuery((t) => ({ ...t, publishName: values.publishName }));
+              setFetchQuery({ publishName: values.publishName, currentPage: 1 });
             }}
           >
             搜索
@@ -197,15 +178,7 @@ export default () => {
         </Form>
       )}
       {/*  */}
-      <div className="text-align-right mb8">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
-      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      <Table columns={columns} datasets={pageData.data} loading={loading} />
       <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
