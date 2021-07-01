@@ -1,24 +1,55 @@
-import React, { useRef } from 'react';
-import { Button, Input, Form, Message } from 'redleaf-rc';
-import { saveApp } from '@/api/app';
+import React, { useRef, useState } from 'react';
+import { Button, Input, Form, Message, Select } from 'redleaf-rc';
+import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
+import { getAppBranch, getAppCommit } from '@/api/app';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
 export default (props) => {
-  const { closeDlg, getList, info = {} } = props;
+  const { closeDlg, getList, appList = {} } = props;
+  const [state, setState] = useSafeState({
+    appId: '',
+    branch: [],
+    commit: [],
+  });
   const formRef: any = useRef();
 
   return (
     <Form
-      className="create-container dialog-center"
-      defaultValue={info}
+      className="create-dlg dialog-center"
       getInstance={(i) => {
         formRef.current = i;
       }}
+      onValuesChange={({ value, name, values }) => {
+        switch (name) {
+          case 'app':
+            setState({ appId: value[0] });
+            getAppBranch({ id: value[0] })
+              .then((res) => {
+                setState({ branch: res.map((v) => ({ value: v.name, text: v.name })) });
+              })
+              .catch((e) => {
+                Message.error(e.message);
+              });
+            break;
+          case 'branch':
+            getAppCommit({ id: state.appId, refName: value[0] })
+              .then((res) => {
+                console.log(res);
+                // setState({ appId: value[0] });
+              })
+              .catch((e) => {
+                Message.error(e.message);
+              });
+            break;
+          default:
+            break;
+        }
+      }}
     >
       <Form.Item
-        label="应用名称："
-        name="appName"
+        label="发布名称："
+        name="name"
         showRequiredMark
         validators={[
           {
@@ -29,33 +60,71 @@ export default (props) => {
       >
         <Input maxLength={20} showCount />
       </Form.Item>
-      <Form.Item label="应用描述：" name="desc">
-        <Input type="textarea" rows={5} maxLength={100} showCount />
+      <Form.Item label="发布描述：" name="desc">
+        <Input type="textarea" rows={3} maxLength={100} showCount />
       </Form.Item>
-      <Form.Item label="仓库地址：" name="git">
-        <Input type="textarea" rows={5} maxLength={200} showCount />
+      <Form.Item
+        label="关联应用："
+        name="app"
+        showRequiredMark
+        validators={[
+          {
+            rule: required,
+            message: requiredMsg,
+          },
+        ]}
+      >
+        <Select options={appList} optionsClassName="create-dlg-select-options" />
+      </Form.Item>
+      <Form.Item
+        label="分支："
+        name="branch"
+        showRequiredMark
+        validators={[
+          {
+            rule: required,
+            message: requiredMsg,
+          },
+        ]}
+      >
+        <Select options={state.branch} optionsClassName="create-dlg-select-options" />
+      </Form.Item>
+      <Form.Item
+        label="提交ID："
+        name="commitId"
+        showRequiredMark
+        validators={[
+          {
+            rule: required,
+            message: requiredMsg,
+          },
+        ]}
+      >
+        <Select options={state.commit} optionsClassName="create-dlg-select-options" />
       </Form.Item>
       <div className="btns">
         <Button
           className="mr16"
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
-            if (Object.keys(errors).length > 0) {
-              Message.show({ title: formUnpass });
-              return;
-            }
-            if (info.id) {
-              values.id = info.id;
-            }
-            saveApp(values)
-              .then((res) => {
-                closeDlg?.();
-                getList?.();
-                Message.show({ title: res.message });
-              })
-              .catch((e) => {
-                Message.show({ title: e.message });
-              });
+
+            console.log(values);
+            // if (Object.keys(errors).length > 0) {
+            //   Message.error(formUnpass);
+            //   return;
+            // }
+            // if (info.id) {
+            //   values.id = info.id;
+            // }
+            // saveApp(values)
+            //   .then((res) => {
+            //     closeDlg?.();
+            //     getList?.();
+            //     Message.success(res.message);
+            //   })
+            //   .catch((e) => {
+            //     Message.error(e.message);
+            //   });
           }}
         >
           确定
