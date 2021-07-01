@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Form, Table, Message, Popup, Select } from 'redleaf-rc';
 import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
-import { getAllAuth, saveAuth, deleteAuth } from '@/api/userApp';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
-import { getUserDataByName } from '@/utils';
+import { getUserByName } from '@/api/user';
 
-const authMap = [
+const accessMap = [
   {
     value: 'admin',
     text: '管理员',
@@ -25,11 +24,11 @@ const defaultAuth = 'develop';
 
 export default (props) => {
   const { appInfo } = props;
-  const { appName, id } = appInfo || {};
+  const { name, id } = appInfo || {};
   const [options, setOptions] = useState([]);
   const formRef: any = useRef();
 
-  const { changePage, pageData, fetchQuery, setFetchQuery } = usePageTable({
+  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqData: {
       id,
     },
@@ -37,26 +36,26 @@ export default (props) => {
   });
 
   const getUserData = useThrottle((val) => {
-    getUserDataByName(val)
+    getUserByName({ username: val })
       .then((res) => {
         if (res && res.length > 0) {
           setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
         }
       })
       .catch((e) => {
-        Message.show({ title: e.message });
+        Message.error(e.message);
       });
   }, 200);
 
-  const changeAuth = useCallback(
+  const changeAccess = useCallback(
     (param) => {
       saveAuth(param)
         .then((res) => {
-          Message.show({ title: res.message });
-          setFetchQuery((t) => ({ ...t, currentPage: t.currentPage }));
+          Message.success(res.message);
+          setFetchQuery((t) => ({ ...t }));
         })
         .catch((e) => {
-          Message.show({ title: e.message });
+          Message.error(e.message);
         });
     },
     [setFetchQuery],
@@ -77,13 +76,13 @@ export default (props) => {
           return (
             <Select
               value={[meta.auth]}
-              options={authMap}
+              options={accessMap}
               showClearIcon={false}
               showSearch={false}
               onChange={({ meta: changeData }) => {
-                changeAuth([
+                changeAccess([
                   {
-                    appName,
+                    name,
                     appId: id,
                     username: meta.username,
                     uid: meta.uid,
@@ -98,7 +97,7 @@ export default (props) => {
       {
         title: '操作',
         columnKey: 'op',
-        width: '100px',
+        width: 100,
         render({ meta }) {
           return (
             <Popup
@@ -108,15 +107,11 @@ export default (props) => {
                   uid: meta.uid,
                 })
                   .then((res) => {
-                    Message.show({
-                      title: res.message,
-                    });
-                    setFetchQuery((t) => ({ ...t, currentPage: 1 }));
+                    Message.success(res.message);
+                    setFetchQuery({ currentPage: 1 });
                   })
                   .catch((e) => {
-                    Message.show({
-                      title: e.message,
-                    });
+                    Message.error(e.message);
                   });
               }}
             >
@@ -130,7 +125,7 @@ export default (props) => {
   );
 
   return (
-    <div className="manage-container">
+    <div className="manage-dlg">
       <Form
         layout="horizontal"
         getInstance={(i) => {
@@ -145,11 +140,11 @@ export default (props) => {
           onClick={() => {
             const { values } = formRef.current.getValues();
             if (values.user && values.user.length > 0) {
-              changeAuth(
+              changeAccess(
                 values.user.map((v) => {
                   const { username, uid } = JSON.parse(v);
                   return {
-                    appName,
+                    name,
                     appId: id,
                     username,
                     uid,
@@ -163,7 +158,8 @@ export default (props) => {
           添加
         </Button>
       </Form>
-      <Table columns={columns} datasets={pageData.data} bordered="row" />
+      {/*  */}
+      <Table columns={columns} datasets={pageData.data} loading={loading} />
       <div className="text-align-right">
         <Pagination
           totalItems={pageData.totalItems}
