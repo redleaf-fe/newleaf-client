@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Message } from 'redleaf-rc';
+import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
 
 export default ({
   reqData,
@@ -12,12 +13,12 @@ export default ({
   dealReqData?: (args) => any;
   reqCondition?: (args) => boolean;
 }) => {
-  const [fetchQuery, setFetchQuery] = useState({
+  const [fetchQuery, setFetchQuery] = useSafeState({
     currentPage: 1,
     pageSize: 10,
     ...reqData,
   });
-  const [pageData, setPageData] = useState({
+  const [pageData, setPageData] = useSafeState({
     totalItems: 0,
     data: [],
   });
@@ -40,7 +41,7 @@ export default ({
           Message.error(e.message);
         });
     },
-    [dealReqData, reqMethod],
+    [dealReqData, reqMethod, setPageData],
   );
 
   useEffect(() => {
@@ -53,9 +54,12 @@ export default ({
     }
   }, [fetchQuery, fetchMethod, reqCondition]);
 
-  const changePage = useCallback(({ page }) => {
-    setFetchQuery((t) => ({ ...t, currentPage: page }));
-  }, []);
+  const changePage = useCallback(
+    ({ page }) => {
+      setFetchQuery({ currentPage: page });
+    },
+    [setFetchQuery],
+  );
 
   return { changePage, pageData, setFetchQuery, fetchQuery, loading };
 };
