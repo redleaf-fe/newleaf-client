@@ -138,14 +138,12 @@ export default () => {
         )}
       </div>
 
-      <div className="text-align-right">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
+      <Pagination
+        totalItems={pageData.totalItems}
+        type="complex"
+        currentPage={fetchQuery.currentPage}
+        onChange={changePage}
+      />
     </div>
   );
 };

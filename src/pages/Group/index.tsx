@@ -166,14 +166,12 @@ export default () => {
       </Form>
       {/*  */}
       <Table columns={columns} datasets={pageData.data} loading={loading} />
-      <div className="text-align-right">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
+      <Pagination
+        totalItems={pageData.totalItems}
+        type="complex"
+        currentPage={fetchQuery.currentPage}
+        onChange={changePage}
+      />
     </div>
   );
 };
