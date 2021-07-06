@@ -8,9 +8,9 @@ export const context = React.createContext({});
 
 const menuData = [
   { value: 'dashboard', text: '大盘' },
-  { value: 'appGroup', text: '分组管理' },
   { value: 'appList', text: '应用管理' },
   { value: 'publishList', text: '发布管理' },
+  { value: 'appGroup', text: '分组管理' },
   { value: 'logList', text: '日志列表' },
   { value: 'logScript', text: '日志脚本' },
 ];
@@ -49,7 +49,7 @@ export default class Layout extends Component {
             <div className="title">newleaf</div>
             <Menu
               defaultValue={location.pathname.slice(1)}
-              datasets={menuData}
+              options={menuData}
               onChange={({ meta }) => {
                 history.push(`/${meta.value}`);
                 this.setState({ pageTitle: meta.text || '' });

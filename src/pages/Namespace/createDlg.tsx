@@ -31,7 +31,7 @@ export default (props) => {
         <Input maxLength={20} showCount />
       </Form.Item>
       <Form.Item label="描述：" name="description">
-        <Input type="textarea" rows={5} maxLength={100} showCount />
+        <Input type="textarea" rows={3} maxLength={100} showCount />
       </Form.Item>
       <div className="btns">
         <Button
