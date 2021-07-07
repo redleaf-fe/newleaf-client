@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button, Input, Form, Message, Select } from 'redleaf-rc';
 import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
 import { getAppBranch, getAppCommit } from '@/api/app';
+import { savePublish } from '@/api/publish';
 import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
@@ -23,20 +24,35 @@ export default (props) => {
       onValuesChange={({ value, name, values }) => {
         switch (name) {
           case 'app':
-            setState({ appId: value[0] });
-            getAppBranch({ id: value[0] })
-              .then((res) => {
-                setState({ branch: res.map((v) => ({ value: v.name, text: v.name })) });
-              })
-              .catch((e) => {
-                Message.error(e.message);
-              });
+            {
+              const val = JSON.parse(value[0]);
+              setState({ appId: val.source_id });
+              getAppBranch({ id: val.source_id })
+                .then((res) => {
+                  setState({ branch: res.map((v) => ({ value: v.name, text: v.name })) });
+                })
+                .catch((e) => {
+                  Message.error(e.message);
+                });
+            }
             break;
           case 'branch':
             getAppCommit({ id: state.appId, refName: value[0] })
               .then((res) => {
-                console.log(res);
-                // setState({ appId: value[0] });
+                setState({
+                  commit: res.map((v) => ({
+                    value: v.id,
+                    text: v.id,
+                    renderOption() {
+                      return (
+                        <>
+                          <p className="commit-id">{v.id}</p>
+                          <p className="commit-title">{v.title}</p>
+                        </>
+                      );
+                    },
+                  })),
+                });
               })
               .catch((e) => {
                 Message.error(e.message);
@@ -100,7 +116,7 @@ export default (props) => {
           },
         ]}
       >
-        <Select options={state.commit} optionsClassName="create-dlg-select-options" />
+        <Select options={state.commit} optionsClassName="create-dlg-select-options create-dlg-select-commit" />
       </Form.Item>
       <div className="btns">
         <Button
@@ -108,23 +124,26 @@ export default (props) => {
           onClick={() => {
             const { values, errors } = formRef.current.getValues();
 
-            console.log(values);
-            // if (Object.keys(errors).length > 0) {
-            //   Message.error(formUnpass);
-            //   return;
-            // }
-            // if (info.id) {
-            //   values.id = info.id;
-            // }
-            // saveApp(values)
-            //   .then((res) => {
-            //     closeDlg?.();
-            //     getList?.();
-            //     Message.success(res.message);
-            //   })
-            //   .catch((e) => {
-            //     Message.error(e.message);
-            //   });
+            if (Object.keys(errors).length > 0) {
+              Message.error(formUnpass);
+              return;
+            }
+            const app = JSON.parse(values.app);
+            savePublish({
+              ...values,
+              appId: app.source_id,
+              appName: app.source_name,
+              branch: values.branch[0],
+              commitId: values.commitId[0],
+            })
+              .then((res) => {
+                closeDlg?.();
+                getList?.();
+                Message.success(res.message);
+              })
+              .catch((e) => {
+                Message.error(e.message);
+              });
           }}
         >
           确定
