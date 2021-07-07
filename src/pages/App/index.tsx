@@ -6,8 +6,8 @@ import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
 import { accessLevelMap } from '@/const';
 
-import CreateDlg from '../Namespace/createDlg';
-import ManageDlg from '../Namespace/manageDlg';
+import CreateDlg from './createDlg';
+import ManageDlg from './manageDlg';
 import ApproveDlg from '../Dialogs/approveDlg';
 import './style.less';
 

@@ -4,8 +4,8 @@ const prefix = 'user';
 
 export const getUserByName = (data) => req({ url: `${prefix}/getByName`, data });
 
-export const getMembersInNamespace = (data) => req({ url: `${prefix}/getMembersInNamespace`, data });
+export const getMembersInApp = (data) => req({ url: `${prefix}/getMembersInApp`, data });
 
-export const saveUserToNamespace = (data) => req({ url: `${prefix}/saveUserToNamespace`, method: 'post', data });
+export const saveUserToApp = (data) => req({ url: `${prefix}/saveUserToApp`, method: 'post', data });
 
-export const removeUserFromNamespace = (data) => req({ url: `${prefix}/removeUserFromNamespace`, method: 'post', data });
+export const removeUserFromApp = (data) => req({ url: `${prefix}/removeUserFromApp`, method: 'post', data });

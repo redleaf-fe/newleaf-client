@@ -3,7 +3,7 @@ import { Button, Form, Table, Message, Popup, Select, Input, Dialog } from 'redl
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import { accessLevelMap } from '@/const';
-import { getMembersInNamespace, saveUserToNamespace, removeUserFromNamespace } from '@/api/user';
+import { getMembersInApp, saveUserToApp, removeUserFromApp } from '@/api/user';
 
 import AddUserDlg from '../Dialogs/addUserDlg';
 
@@ -15,7 +15,7 @@ export default (props) => {
   const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
-    reqMethod: getMembersInNamespace,
+    reqMethod: getMembersInApp,
     dealReqData: useCallback(
       (args) => {
         const { name, currentPage } = args;
@@ -32,7 +32,7 @@ export default (props) => {
   const changeAccess = useCallback(
     (param) => {
       param.type = type;
-      saveUserToNamespace(param)
+      saveUserToApp(param)
         .then((res) => {
           Message.success(res.message);
           setFetchQuery((t) => ({ ...t }));
@@ -91,7 +91,7 @@ export default (props) => {
           return (
             <Popup
               onOk={() => {
-                removeUserFromNamespace({
+                removeUserFromApp({
                   gitUid: meta.id,
                   id: source_id,
                   type,
