@@ -8,6 +8,7 @@ import { accessLevelMap } from '@/const';
 
 import CreateDlg from '../Namespace/createDlg';
 import ManageDlg from '../Namespace/manageDlg';
+import ApproveDlg from './approveDlg';
 import './style.less';
 
 export default () => {
@@ -85,8 +86,21 @@ export default () => {
               >
                 成员管理
               </div>
+              <div
+                className="color-primary pointer"
+                onClick={() => {
+                  dlgRef.current = Dialog.show({
+                    content: <ApproveDlg {...{ closeDlg, info: meta }} />,
+                    title: '审核配置',
+                    innerClassName: 'dialog-side add-approve-user-dlg',
+                    position: 'right',
+                  });
+                }}
+              >
+                审核配置
+              </div>
               <div className="color-primary pointer" onClick={() => {}}>
-                部署配置
+                机器配置
               </div>
               <div
                 className="color-primary pointer"
@@ -152,14 +166,12 @@ export default () => {
       </Form>
       {/*  */}
       <Table columns={columns} datasets={pageData.data} loading={loading} />
-      <div className="text-align-right">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
+      <Pagination
+        totalItems={pageData.totalItems}
+        type="complex"
+        currentPage={fetchQuery.currentPage}
+        onChange={changePage}
+      />
     </div>
   );
 };
