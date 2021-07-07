@@ -4,7 +4,7 @@ import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import { getAppInGroup, shareAppWithGroup, delShareAppWithGroup } from '@/api/group';
 
-import AddAppDlg from './addAppDlg';
+import AddAppDlg from '../Dialogs/addAppDlg';
 
 export default (props) => {
   const { info } = props;

@@ -8,7 +8,7 @@ import { accessLevelMap } from '@/const';
 
 import CreateDlg from '../Namespace/createDlg';
 import ManageDlg from '../Namespace/manageDlg';
-import ApproveDlg from './approveDlg';
+import ApproveDlg from '../Dialogs/approveDlg';
 import './style.less';
 
 export default () => {

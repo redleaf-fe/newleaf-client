@@ -5,8 +5,7 @@ import usePageTable from '@/hooks/usePageTable';
 import { accessLevelMap } from '@/const';
 import { getMembersInNamespace, saveUserToNamespace, removeUserFromNamespace } from '@/api/user';
 
-import AddUserDlg from './addUserDlg';
-import './style.less';
+import AddUserDlg from '../Dialogs/addUserDlg';
 
 const accessMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: accessLevelMap[v] }));
 
