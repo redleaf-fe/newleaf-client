@@ -1,12 +1,11 @@
 import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
 import { Form, Button, Table, Dialog, Message, Popup, Input, Select } from 'redleaf-rc';
 import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
-import { getPubishList, savePublish, publishDetail } from '@/api/publish';
+import { getPubishList, publishDetail } from '@/api/publish';
 import { getAllApp } from '@/api/app';
 import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
-import { maxPageSize } from '@/const';
 import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
@@ -43,10 +42,10 @@ export default () => {
       .then((res) => {
         if (res && res.length > 0) {
           setAppList({
-            data: res.map((v) => ({ value: String(v.source_id), text: v.source_name })),
+            data: res.map((v) => ({ value: JSON.stringify(v), text: v.source_name })),
             reqed: true,
           });
-          setFetchQuery({ appId: res[0].id });
+          setFetchQuery({ appId: res[0].source_id });
         }
       })
       .catch((e) => {
@@ -70,17 +69,33 @@ export default () => {
     () => [
       {
         title: '发布名称',
-        columnKey: 'publishName',
+        columnKey: 'name',
+        grow: 1,
+      },
+      {
+        title: '描述',
+        columnKey: 'desc',
         grow: 1,
       },
       {
         title: '关联应用',
-        columnKey: 'name',
+        columnKey: 'appName',
+        grow: 1,
+      },
+      {
+        title: '分支',
+        columnKey: 'branch',
+        grow: 1,
+      },
+      {
+        title: '提交',
+        columnKey: 'commitId',
+        grow: 1,
       },
       {
         title: '更新时间',
         columnKey: 'updatedAt',
-        width: 180,
+        width: 120,
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -90,48 +105,11 @@ export default () => {
         columnKey: 'op',
         width: 100,
         render({ meta }) {
-          return (
-            <div className="operate">
-              <div
-                className="color-primary pointer"
-                onClick={() => {
-                  dlgRef.current = Dialog.show({
-                    content: <ManageDlg {...{ closeDlg, appInfo: meta }} />,
-                    title: '成员管理',
-                    innerClassName: 'dialog-side',
-                    position: 'right',
-                  });
-                }}
-              >
-                成员管理
-              </div>
-              <div className="color-primary pointer" onClick={() => {}}>
-                部署配置
-              </div>
-              <div
-                className="color-primary pointer"
-                onClick={() => {
-                  publishDetail({ id: meta.id })
-                    .then((res) => {
-                      res.desc = res.desc || '';
-                      dlgRef.current = Dialog.show({
-                        content: <CreateDlg {...{ closeDlg, getList, info: { ...res, id: meta.id } }} />,
-                        title: '编辑应用',
-                      });
-                    })
-                    .catch((e) => {
-                      Message.error(e.message);
-                    });
-                }}
-              >
-                编辑
-              </div>
-            </div>
-          );
+          return <div className="operate">1</div>;
         },
       },
     ],
-    [closeDlg, getList],
+    [],
   );
 
   return (
@@ -151,6 +129,7 @@ export default () => {
       {/*  */}
       {appList.reqed && (
         <Form
+          className="mb16"
           layout="horizontal"
           defaultValue={{ app: appList.data[0] ? [appList.data[0].value] : [] }}
           getInstance={(i) => {
@@ -179,14 +158,12 @@ export default () => {
       )}
       {/*  */}
       <Table columns={columns} datasets={pageData.data} loading={loading} />
-      <div className="text-align-right">
-        <Pagination
-          totalItems={pageData.totalItems}
-          type="complex"
-          currentPage={fetchQuery.currentPage}
-          onChange={changePage}
-        />
-      </div>
+      <Pagination
+        totalItems={pageData.totalItems}
+        type="complex"
+        currentPage={fetchQuery.currentPage}
+        onChange={changePage}
+      />
     </div>
   );
 };
