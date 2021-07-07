@@ -1,10 +1,11 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Button, Steps, Dialog, Message } from 'redleaf-rc';
 import { useMount, useSafeState } from 'redleaf-rc/dist/utils/hooks';
 import { saveProto, getProto } from '@/api/approve';
 import { IconMinus } from '@/components/icons';
 
-import AddUserDlg from '../Namespace/addUserDlg';
+import AddUserDlg from './addUserDlg';
+import './style.less';
 
 export default (props) => {
   const { info } = props;

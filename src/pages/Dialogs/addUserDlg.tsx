@@ -2,20 +2,23 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Button, Select, Form, Message } from 'redleaf-rc';
 import { useThrottle } from 'redleaf-rc/dist/utils/hooks';
 import { required, requiredMsg } from '@/utils/validators';
-import { getAppByName } from '@/api/app';
+import { getUserByName } from '@/api/user';
 import { formUnpass } from '@/const';
 
+import './style.less';
+
+
 export default (props) => {
-  const { save, info, getList } = props;
+  const { addUser } = props;
   const [options, setOptions] = useState([]);
   const formRef: any = useRef();
 
-  const getAppData = useThrottle(
+  const getUserData = useThrottle(
     useCallback((val) => {
-      getAppByName({ name: val })
+      getUserByName({ username: val })
         .then((res) => {
           if (res && res.length > 0) {
-            setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.source_name })));
+            setOptions(res.map((v) => ({ value: JSON.stringify(v), text: v.username })));
           }
         })
         .catch((e) => {
@@ -27,15 +30,15 @@ export default (props) => {
 
   return (
     <Form
-      className="addapp-dlg"
+      className="adduser-dlg"
       layout="horizontal"
       getInstance={(i) => {
         formRef.current = i;
       }}
     >
       <Form.Item
-        label="应用名："
-        name="app"
+        label="用户名："
+        name="user"
         validators={[
           {
             rule: required,
@@ -43,7 +46,7 @@ export default (props) => {
           },
         ]}
       >
-        <Select options={options} onSearch={getAppData} placeholder="输入要搜索的应用名" />
+        <Select options={options} onSearch={getUserData} placeholder="输入要搜索的用户名" />
       </Form.Item>
       <Button
         className="ml16 submit-btn"
@@ -53,14 +56,7 @@ export default (props) => {
             Message.error(formUnpass);
             return;
           }
-          save({ id: JSON.parse(values.app[0]).source_id, group_id: info.source_id })
-            .then((res) => {
-              getList();
-              Message.success(res.message);
-            })
-            .catch((e) => {
-              Message.error(e.message);
-            });
+          addUser(JSON.parse(values.user[0]));
         }}
       >
         确定
