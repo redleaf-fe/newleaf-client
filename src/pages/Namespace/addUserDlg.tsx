@@ -53,7 +53,7 @@ export default (props) => {
             Message.error(formUnpass);
             return;
           }
-          addUser(JSON.parse(values.user[0]).uid);
+          addUser(JSON.parse(values.user[0]));
         }}
       >
         确定

@@ -3,7 +3,7 @@ import { Button, Form, Table, Message, Popup, Select, Input, Dialog } from 'redl
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import { accessLevelMap } from '@/const';
-import { getMembersInNamespace, saveUsersToNamespace, removeUserFromNamespace } from '@/api/user';
+import { getMembersInNamespace, saveUserToNamespace, removeUserFromNamespace } from '@/api/user';
 
 import AddUserDlg from './addUserDlg';
 import './style.less';
@@ -33,7 +33,7 @@ export default (props) => {
   const changeAccess = useCallback(
     (param) => {
       param.type = type;
-      saveUsersToNamespace(param)
+      saveUserToNamespace(param)
         .then((res) => {
           Message.success(res.message);
           setFetchQuery((t) => ({ ...t }));
@@ -46,10 +46,10 @@ export default (props) => {
   );
 
   const addUser = useCallback(
-    (uid) => {
+    (v) => {
       changeAccess({
         id: source_id,
-        uid,
+        uid: v.uid,
       });
     },
     [source_id, changeAccess],
