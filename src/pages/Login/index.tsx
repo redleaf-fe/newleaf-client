@@ -94,9 +94,15 @@ export default () => {
               Message.error('两次密码输入不一致');
               return;
             }
-            apiMap[type](values).catch((e) => {
-              Message.error(e.message);
-            });
+            apiMap[type](values)
+              .then((res) => {
+                if (res && res.message) {
+                  Message.error(JSON.stringify(res.message));
+                }
+              })
+              .catch((e) => {
+                Message.error(e.message);
+              });
           }}
         >
           {typeMap[type]}
