@@ -9,7 +9,6 @@ import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
 
 import CreateDlg from './createDlg';
-import ManageDlg from './manageDlg';
 import './style.less';
 
 export default () => {
@@ -42,10 +41,10 @@ export default () => {
       .then((res) => {
         if (res && res.length > 0) {
           setAppList({
-            data: res.map((v) => ({ value: JSON.stringify(v), text: v.source_name })),
+            data: res.map((v) => ({ value: JSON.stringify(v), text: v.appName })),
             reqed: true,
           });
-          setFetchQuery({ appId: res[0].source_id });
+          setFetchQuery({ appId: res[0].appId });
         }
       })
       .catch((e) => {

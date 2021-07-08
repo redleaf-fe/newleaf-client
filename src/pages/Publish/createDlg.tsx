@@ -26,10 +26,10 @@ export default (props) => {
           case 'app':
             {
               const val = JSON.parse(value[0]);
-              setState({ appId: val.source_id });
-              getAppBranch({ id: val.source_id })
+              setState({ appId: val.appId });
+              getAppBranch({ id: val.appId })
                 .then((res) => {
-                  setState({ branch: res.map((v) => ({ value: v.name, text: v.name })) });
+                  setState({ branch: (res || []).map((v) => ({ value: v.name, text: v.name })) });
                 })
                 .catch((e) => {
                   Message.error(e.message);
@@ -40,7 +40,7 @@ export default (props) => {
             getAppCommit({ id: state.appId, refName: value[0] })
               .then((res) => {
                 setState({
-                  commit: res.map((v) => ({
+                  commit: (res || []).map((v) => ({
                     value: v.id,
                     text: v.id,
                     renderOption() {
@@ -131,8 +131,8 @@ export default (props) => {
             const app = JSON.parse(values.app);
             savePublish({
               ...values,
-              appId: app.source_id,
-              appName: app.source_name,
+              appId: app.appId,
+              appName: app.appName,
               branch: values.branch[0],
               commitId: values.commitId[0],
             })

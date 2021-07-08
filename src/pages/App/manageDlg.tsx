@@ -11,7 +11,7 @@ const accessMap = Object.keys(accessLevelMap).map((v) => ({ value: v, text: acce
 
 export default (props) => {
   const { info, type } = props;
-  const { source_id } = info || {};
+  const { appId, appName } = info || {};
   const formRef: any = useRef();
 
   const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
@@ -19,13 +19,13 @@ export default (props) => {
     dealReqData: useCallback(
       (args) => {
         const { name, currentPage } = args;
-        const param: any = { currentPage, id: source_id, type };
+        const param: any = { currentPage, id: appId, type };
         if (name) {
           param.name = name;
         }
         return param;
       },
-      [source_id, type],
+      [appId, type],
     ),
   });
 
@@ -47,11 +47,12 @@ export default (props) => {
   const addUser = useCallback(
     (v) => {
       changeAccess({
-        id: source_id,
+        id: appId,
+        name: appName,
         uid: v.uid,
       });
     },
-    [source_id, changeAccess],
+    [appId, appName, changeAccess],
   );
 
   const columns = useMemo(
@@ -74,7 +75,8 @@ export default (props) => {
               showSearch={false}
               onChange={({ meta: changeData }) => {
                 changeAccess({
-                  id: source_id,
+                  id: appId,
+                  name: appName,
                   gitUid: meta.id,
                   access: changeData[0].value,
                 });
@@ -93,7 +95,7 @@ export default (props) => {
               onOk={() => {
                 removeUserFromApp({
                   gitUid: meta.id,
-                  id: source_id,
+                  id: appId,
                   type,
                 })
                   .then((res) => {
@@ -111,7 +113,7 @@ export default (props) => {
         },
       },
     ],
-    [changeAccess, setFetchQuery, source_id, type],
+    [changeAccess, setFetchQuery, appId, appName, type],
   );
 
   return (

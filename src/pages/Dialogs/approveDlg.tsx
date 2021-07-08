@@ -98,7 +98,7 @@ export default (props) => {
   };
 
   useMount(() => {
-    getProto({ businessId: info.source_id, type: 'app' })
+    getProto({ businessId: info.appId, type: 'app' })
       .then((res) => {
         if (res.stage) {
           const stage = JSON.parse(res.stage);
@@ -115,8 +115,6 @@ export default (props) => {
             approveId: res.id,
             stepVal: JSON.stringify(stage[stage.length - 1].map((vv) => ({ username: vv.n, uid: vv.i }))),
           });
-        } else {
-          Message.error(res.message);
         }
       })
       .catch((e) => {
@@ -157,7 +155,7 @@ export default (props) => {
               });
             const param = {
               stage,
-              businessId: info.source_id,
+              businessId: info.appId,
               type: 'app',
             };
             if (state.approveId) {

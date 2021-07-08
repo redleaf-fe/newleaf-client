@@ -66,7 +66,7 @@ export default () => {
       .then((res) => {
         if (res && res.length > 0) {
           setAppList({
-            data: res.map((v) => ({ value: String(v.source_id), text: v.source_name })),
+            data: res.map((v) => ({ value: String(v.appId), text: v.appName })),
             reqed: true,
           });
           setFetchQuery({ appId: res[0].id });

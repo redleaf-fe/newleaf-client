@@ -42,13 +42,13 @@ export default () => {
     () => [
       {
         title: '应用名称',
-        columnKey: 'source_name',
+        columnKey: 'appName',
         grow: 1,
       },
       {
         title: '更新时间',
         columnKey: 'updatedAt',
-        width: 200,
+        grow: 1,
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -56,14 +56,14 @@ export default () => {
       {
         title: '编辑人',
         columnKey: 'updater',
-        width: 200,
+        grow: 1,
       },
       {
         title: '权限',
-        columnKey: 'access_level',
-        width: 200,
+        columnKey: 'auth',
+        grow: 1,
         render({ meta }) {
-          return <div>{accessLevelMap[meta.access_level]}</div>;
+          return <div>{accessLevelMap[meta.auth]}</div>;
         },
       },
       {
@@ -105,12 +105,12 @@ export default () => {
               <div
                 className="color-primary pointer"
                 onClick={() => {
-                  getAppDetail({ id: meta.source_id })
+                  getAppDetail({ id: meta.appId })
                     .then((res) => {
                       res.desc = res.desc || '';
                       dlgRef.current = Dialog.show({
                         content: (
-                          <CreateDlg {...{ closeDlg, getList, save: saveApp, info: { ...res, id: meta.source_id } }} />
+                          <CreateDlg {...{ closeDlg, getList, save: saveApp, info: { ...res, id: meta.appId } }} />
                         ),
                         title: '编辑应用',
                       });
