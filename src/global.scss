@@ -3,7 +3,7 @@ body {
 
   margin: 0;
   min-width: 1280px;
-  min-height: 768px;
+  // min-height: 768px;
 
   color: #333;
   font-size: 14px;
@@ -35,12 +35,15 @@ div {
 }
 
 .dialog-center {
-  height: 400px;
   overflow: scroll;
 }
 
 .pointer {
   cursor: pointer;
+}
+
+.text-deco-none {
+  text-decoration: none;
 }
 
 .color-primary {
@@ -49,6 +52,10 @@ div {
 
 .color-danger {
   color: var(--danger1);
+}
+
+.color-success {
+  color: var(--success1);
 }
 
 .vertical-align-top {
