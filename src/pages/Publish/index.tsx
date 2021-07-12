@@ -1,17 +1,25 @@
-import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
-import { Form, Button, Table, Dialog, Message, Popup, Input, Select } from 'redleaf-rc';
+import React, { useCallback, useRef, useMemo, useEffect } from 'react';
+import { Form, Button, Table, Dialog, Message, Tabs, Input, Select } from 'redleaf-rc';
 import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
-import { getPubishList, publishDetail } from '@/api/publish';
+import { getPubishList, publish, build } from '@/api/publish';
 import { getAllApp } from '@/api/app';
-import DatetimeRange from '@/components/datetimeRange';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
+import cls from 'classnames';
 
 import CreateDlg from './createDlg';
 import './style.less';
 
-export default () => {
+const publishMap = {
+  pending: '发布',
+  doing: '发布中',
+  done: '已发布',
+  fail: '发布失败',
+};
+
+function Publish(props) {
+  const { env, approve } = props;
   const [appList, setAppList] = useSafeState({
     count: 0,
     data: [],
@@ -20,14 +28,14 @@ export default () => {
   });
   const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
     reqMethod: getPubishList,
-    dealReqData: useCallback((args) => {
-      const { appId, publishName, currentPage } = args;
-      const param: any = { appId, currentPage };
-      if (publishName) {
-        param.publishName = publishName;
-      }
-      return param;
-    }, []),
+    dealReqData: useCallback(
+      (args) => {
+        const { appId, currentPage } = args;
+        const param: any = { appId, env, currentPage };
+        return param;
+      },
+      [env],
+    ),
     reqCondition: useCallback((args) => {
       return args.appId;
     }, []),
@@ -67,18 +75,13 @@ export default () => {
   const columns = useMemo(
     () => [
       {
-        title: '发布名称',
-        columnKey: 'name',
+        title: '关联应用',
+        columnKey: 'appName',
         grow: 1,
       },
       {
         title: '描述',
         columnKey: 'desc',
-        grow: 1,
-      },
-      {
-        title: '关联应用',
-        columnKey: 'appName',
         grow: 1,
       },
       {
@@ -88,13 +91,13 @@ export default () => {
       },
       {
         title: '提交',
-        columnKey: 'commitId',
+        columnKey: 'commit',
         grow: 1,
       },
       {
         title: '更新时间',
         columnKey: 'updatedAt',
-        width: 120,
+        grow: 1,
         render({ meta }) {
           return <div>{dayjs(meta.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -104,11 +107,53 @@ export default () => {
         columnKey: 'op',
         width: 100,
         render({ meta }) {
-          return <div className="operate">1</div>;
+          return (
+            <>
+              <div
+                onClick={() => {
+                  build({ id: meta.id })
+                    .then((res) => {
+                      Message.error(res.message);
+                    })
+                    .catch((e) => {
+                      Message.error(e.message);
+                    });
+                }}
+              >
+                <a href="" target="_blank" rel="noopener noreferrer">
+                  打包
+                </a>
+              </div>
+              <div
+                className={cls('color-primary pointer', {
+                  'color-success': meta.status === 'done',
+                  'color-danger': meta.status === 'fail',
+                })}
+                onClick={() => {
+                  if (meta.status === 'pending') {
+                    publish({ id: meta.id })
+                      .then((res) => {
+                        Message.error(res.message);
+                      })
+                      .catch((e) => {
+                        Message.error(e.message);
+                      });
+                  }
+                }}
+              >
+                {publishMap[meta.status]}
+              </div>
+              {env === 'prod' && (
+                <div className="color-primary pointer" onClick={() => {}}>
+                  审核
+                </div>
+              )}
+            </>
+          );
         },
       },
     ],
-    [],
+    [env],
   );
 
   return (
@@ -117,7 +162,7 @@ export default () => {
         <Button
           onClick={() => {
             dlgRef.current = Dialog.show({
-              content: <CreateDlg {...{ closeDlg, getList, appList: appList.data }} />,
+              content: <CreateDlg {...{ closeDlg, getList, appList: appList.data, env }} />,
               title: '新建发布',
             });
           }}
@@ -138,17 +183,11 @@ export default () => {
           <Form.Item name="app" label="应用名称：">
             <Select options={appList.data} />
           </Form.Item>
-          <Form.Item name="datetime" label="发布时间：">
-            <DatetimeRange />
-          </Form.Item>
-          <Form.Item name="publishName" label="发布名称：">
-            <Input maxLength={50} />
-          </Form.Item>
           <Button
             className="ml16 vertical-align-middle"
             onClick={() => {
               const { values } = formRef.current.getValues();
-              setFetchQuery({ publishName: values.publishName, currentPage: 1 });
+              setFetchQuery({ appId: JSON.parse(values.app[0]).appId, currentPage: 1 });
             }}
           >
             搜索
@@ -163,6 +202,44 @@ export default () => {
         currentPage={fetchQuery.currentPage}
         onChange={changePage}
       />
+    </div>
+  );
+}
+
+const envOptions = [
+  {
+    value: 'daily',
+    text: '日常',
+  },
+  {
+    value: 'pre',
+    text: '预发',
+  },
+  {
+    value: 'perf',
+    text: '性能',
+  },
+  {
+    value: 'prod',
+    text: '生产',
+  },
+];
+
+export default () => {
+  const [state, setState] = useSafeState({
+    tabValue: 'pre',
+  });
+
+  return (
+    <div className="publishdetail-container">
+      <Tabs
+        options={envOptions}
+        value={state.tabValue}
+        onChange={({ value }) => {
+          setState({ tabValue: value });
+        }}
+      />
+      <Publish env={state.tabValue} approve={state.tabValue === 'prod'} />
     </div>
   );
 };

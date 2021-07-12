@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Button, Input, Form, Message, Select } from 'redleaf-rc';
 import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
 import { getAppBranch, getAppCommit } from '@/api/app';
@@ -7,7 +7,7 @@ import { required, requiredMsg } from '@/utils/validators';
 import { formUnpass } from '@/const';
 
 export default (props) => {
-  const { closeDlg, getList, appList = {} } = props;
+  const { closeDlg, getList, appList = {}, env } = props;
   const [state, setState] = useSafeState({
     appId: '',
     branch: [],
@@ -21,7 +21,7 @@ export default (props) => {
       getInstance={(i) => {
         formRef.current = i;
       }}
-      onValuesChange={({ value, name, values }) => {
+      onValuesChange={({ value, name }) => {
         switch (name) {
           case 'app':
             {
@@ -64,22 +64,6 @@ export default (props) => {
       }}
     >
       <Form.Item
-        label="发布名称："
-        name="name"
-        showRequiredMark
-        validators={[
-          {
-            rule: required,
-            message: requiredMsg,
-          },
-        ]}
-      >
-        <Input maxLength={20} showCount />
-      </Form.Item>
-      <Form.Item label="发布描述：" name="desc">
-        <Input type="textarea" rows={3} maxLength={100} showCount />
-      </Form.Item>
-      <Form.Item
         label="关联应用："
         name="app"
         showRequiredMark
@@ -107,7 +91,7 @@ export default (props) => {
       </Form.Item>
       <Form.Item
         label="提交ID："
-        name="commitId"
+        name="commit"
         showRequiredMark
         validators={[
           {
@@ -117,6 +101,9 @@ export default (props) => {
         ]}
       >
         <Select options={state.commit} optionsClassName="create-dlg-select-options create-dlg-select-commit" />
+      </Form.Item>
+      <Form.Item label="发布描述：" name="desc">
+        <Input type="textarea" rows={3} maxLength={100} showCount />
       </Form.Item>
       <div className="btns">
         <Button
@@ -134,7 +121,8 @@ export default (props) => {
               appId: app.appId,
               appName: app.appName,
               branch: values.branch[0],
-              commitId: values.commitId[0],
+              commit: values.commit[0],
+              env,
             })
               .then((res) => {
                 closeDlg?.();
