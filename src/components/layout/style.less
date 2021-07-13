@@ -1,15 +1,17 @@
 .page-container {
   overflow: hidden;
   min-width: 1280px;
-  min-height: 768px;
+  // min-height: 768px;
 
   .menu-container {
     float: left;
     width: 200px;
-    background-color: #001529;
-    min-height: 768px;
+    height: 100vh;
+    overflow: auto;
+
     --menu-color: white;
     --menu-bgColor: #001529;
+    background-color: #001529;
 
     .title {
       font-size: 28px;
@@ -24,7 +26,8 @@
   .page-content {
     margin-left: 200px;
     background-color: white;
-    min-height: 768px;
+    height: 100vh;
+    overflow: auto;
   }
 
   .page-title {

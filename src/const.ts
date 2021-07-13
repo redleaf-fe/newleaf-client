@@ -1,7 +1,5 @@
 export const formUnpass = '校验未通过';
 
-export const maxPageSize = 10000;
-
 export const accessLevelMap = {
   50: 'Owner',
   40: 'Maintainer',
