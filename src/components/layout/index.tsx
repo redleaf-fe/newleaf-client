@@ -14,6 +14,8 @@ const menuData = [
   { value: 'logScript', text: '日志脚本' },
 ];
 
+const noMenuItemText = { '/buildDetail': '打包详情' };
+
 /* eslint-disable */
 export default class Layout extends Component {
   componentDidCatch(error, errorInfo) {
@@ -50,8 +52,8 @@ export default class Layout extends Component {
               defaultValue={location.pathname.slice(1)}
               options={menuData}
               onChange={({ meta }) => {
-                history.push(`/${meta.value}`);
-                this.setState({ pageTitle: meta.text || '' });
+                meta.value && history.push(`/${meta.value}`);
+                this.setState({ pageTitle: meta.text || noMenuItemText[location.pathname] });
               }}
             />
           </div>
