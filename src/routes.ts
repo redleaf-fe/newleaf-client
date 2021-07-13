@@ -6,6 +6,7 @@ import Layout from '@/components/layout';
 import Login from '@/pages/Login';
 import AppList from '@/pages/App';
 import PublishList from '@/pages/Publish';
+import BuildDetail from '@/pages/Publish/BuildDetail';
 import LogList from '@/pages/Log/List';
 import NotFound from '@/pages/NotFound';
 // 懒加载
@@ -31,11 +32,15 @@ export default [
         component: PublishList,
       },
       {
+        path: 'buildDetail',
+        component: BuildDetail,
+      },
+      {
         path: 'logList',
         component: LogList,
       },
       {
-        path: 'LogScript',
+        path: 'logScript',
         component: LogScript,
       },
       {
