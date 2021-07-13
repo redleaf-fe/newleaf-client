@@ -61,5 +61,5 @@ export default ({
     [setFetchQuery],
   );
 
-  return { changePage, pageData, setFetchQuery, fetchQuery, loading };
+  return { changePage, pageData, setFetchQuery, fetchQuery, loading, fetchMethod };
 };
