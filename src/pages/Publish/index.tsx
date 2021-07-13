@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useMemo, useEffect } from 'react';
-import { Form, Button, Table, Dialog, Message, Tabs, Input, Select } from 'redleaf-rc';
+import { Form, Button, Table, Dialog, Message, Tabs, Select } from 'redleaf-rc';
 import { useSafeState } from 'redleaf-rc/dist/utils/hooks';
-import { getPubishList, publish, build } from '@/api/publish';
+import { getPublishList, publish, build } from '@/api/publish';
 import { getAllApp } from '@/api/app';
 import Pagination from '@/components/pagination';
 import usePageTable from '@/hooks/usePageTable';
@@ -33,8 +33,8 @@ function Publish(props) {
     // 已请求
     reqed: false,
   });
-  const { changePage, pageData, fetchQuery, setFetchQuery, loading } = usePageTable({
-    reqMethod: getPubishList,
+  const { changePage, pageData, fetchQuery, setFetchQuery, fetchMethod } = usePageTable({
+    reqMethod: getPublishList,
     dealReqData: useCallback(
       (args) => {
         const { appId, currentPage } = args;
@@ -67,6 +67,16 @@ function Publish(props) {
         Message.error(e.message);
       });
   }, [setFetchQuery, setAppList]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      fetchMethod(fetchQuery);
+    }, 2000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [fetchMethod, fetchQuery]);
 
   const getList = useCallback(
     (page) => {
@@ -110,23 +120,6 @@ function Publish(props) {
         },
       },
       {
-        title: '发布结果',
-        columnKey: 'status',
-        grow: 1,
-        render({ meta }) {
-          return (
-            <div
-              className={cls({
-                'color-danger': meta.status === 'fail',
-                'color-success': meta.status === 'done',
-              })}
-            >
-              {publishMap[meta.status]}
-            </div>
-          );
-        },
-      },
-      {
         title: '打包结果',
         columnKey: 'buildStatus',
         grow: 1,
@@ -144,6 +137,23 @@ function Publish(props) {
         },
       },
       {
+        title: '发布结果',
+        columnKey: 'status',
+        grow: 1,
+        render({ meta }) {
+          return (
+            <div
+              className={cls({
+                'color-danger': meta.status === 'fail',
+                'color-success': meta.status === 'done',
+              })}
+            >
+              {publishMap[meta.status]}
+            </div>
+          );
+        },
+      },
+      {
         title: '操作',
         columnKey: 'op',
         width: 100,
@@ -152,25 +162,32 @@ function Publish(props) {
             <>
               {['pending', 'fail'].includes(meta.buildStatus) && (
                 <div
+                  className="color-primary pointer"
                   onClick={() => {
-                    build({ id: meta.id })
-                      .then((res) => {
-                        Message.error(res.message);
-                      })
-                      .catch((e) => {
-                        Message.error(e.message);
-                      });
+                    build({ id: meta.id }).catch((e) => {
+                      Message.error(e.message);
+                    });
                   }}
                 >
                   <a
                     className="text-deco-none color-primary"
-                    href="/publish/buildDetail"
+                    href={`#/buildDetail?id=${meta.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     打包
                   </a>
                 </div>
+              )}
+              {['done', 'fail'].includes(meta.buildStatus) && (
+                <a
+                  className="block text-deco-none color-primary"
+                  href={`#/buildDetail?id=${meta.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  打包日志
+                </a>
               )}
               {env === 'prod' && (
                 <div className="color-primary pointer" onClick={() => {}}>
@@ -180,18 +197,14 @@ function Publish(props) {
               {['pending', 'fail'].includes(meta.status) && (
                 <div
                   onClick={() => {
-                    publish({ id: meta.id })
-                      .then((res) => {
-                        Message.error(res.message);
-                      })
-                      .catch((e) => {
-                        Message.error(e.message);
-                      });
+                    publish({ id: meta.id }).catch((e) => {
+                      Message.error(e.message);
+                    });
                   }}
                 >
                   <a
                     className="text-deco-none color-primary"
-                    href="/publish/publishDetail"
+                    href="#/publishDetail"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -246,7 +259,7 @@ function Publish(props) {
         </Form>
       )}
       {/*  */}
-      <Table columns={columns} datasets={pageData.data} loading={loading} />
+      <Table columns={columns} datasets={pageData.data} />
       <Pagination
         totalItems={pageData.totalItems}
         type="complex"
