@@ -12,10 +12,17 @@ import CreateDlg from './createDlg';
 import './style.less';
 
 const publishMap = {
-  pending: '发布',
+  pending: '未发布',
   doing: '发布中',
-  done: '已发布',
+  done: '发布成功',
   fail: '发布失败',
+};
+
+const buildMap = {
+  pending: '未打包',
+  doing: '打包中',
+  fail: '打包失败',
+  done: '打包成功',
 };
 
 function Publish(props) {
@@ -103,34 +110,76 @@ function Publish(props) {
         },
       },
       {
+        title: '发布结果',
+        columnKey: 'status',
+        grow: 1,
+        render({ meta }) {
+          return (
+            <div
+              className={cls({
+                'color-danger': meta.status === 'fail',
+                'color-success': meta.status === 'done',
+              })}
+            >
+              {publishMap[meta.status]}
+            </div>
+          );
+        },
+      },
+      {
+        title: '打包结果',
+        columnKey: 'buildStatus',
+        grow: 1,
+        render({ meta }) {
+          return (
+            <div
+              className={cls({
+                'color-danger': meta.buildStatus === 'fail',
+                'color-success': meta.buildStatus === 'done',
+              })}
+            >
+              {buildMap[meta.buildStatus]}
+            </div>
+          );
+        },
+      },
+      {
         title: '操作',
         columnKey: 'op',
         width: 100,
         render({ meta }) {
           return (
             <>
-              <div
-                onClick={() => {
-                  build({ id: meta.id })
-                    .then((res) => {
-                      Message.error(res.message);
-                    })
-                    .catch((e) => {
-                      Message.error(e.message);
-                    });
-                }}
-              >
-                <a href="" target="_blank" rel="noopener noreferrer">
-                  打包
-                </a>
-              </div>
-              <div
-                className={cls('color-primary pointer', {
-                  'color-success': meta.status === 'done',
-                  'color-danger': meta.status === 'fail',
-                })}
-                onClick={() => {
-                  if (meta.status === 'pending') {
+              {['pending', 'fail'].includes(meta.buildStatus) && (
+                <div
+                  onClick={() => {
+                    build({ id: meta.id })
+                      .then((res) => {
+                        Message.error(res.message);
+                      })
+                      .catch((e) => {
+                        Message.error(e.message);
+                      });
+                  }}
+                >
+                  <a
+                    className="text-deco-none color-primary"
+                    href="/publish/buildDetail"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    打包
+                  </a>
+                </div>
+              )}
+              {env === 'prod' && (
+                <div className="color-primary pointer" onClick={() => {}}>
+                  审核
+                </div>
+              )}
+              {['pending', 'fail'].includes(meta.status) && (
+                <div
+                  onClick={() => {
                     publish({ id: meta.id })
                       .then((res) => {
                         Message.error(res.message);
@@ -138,14 +187,16 @@ function Publish(props) {
                       .catch((e) => {
                         Message.error(e.message);
                       });
-                  }
-                }}
-              >
-                {publishMap[meta.status]}
-              </div>
-              {env === 'prod' && (
-                <div className="color-primary pointer" onClick={() => {}}>
-                  审核
+                  }}
+                >
+                  <a
+                    className="text-deco-none color-primary"
+                    href="/publish/publishDetail"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    发布
+                  </a>
                 </div>
               )}
             </>
