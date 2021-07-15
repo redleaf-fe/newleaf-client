@@ -8,7 +8,7 @@ import { accessLevelMap } from '@/const';
 
 import CreateDlg from './createDlg';
 import ManageDlg from './manageDlg';
-import ApproveDlg from '../Dialogs/approveDlg';
+
 import './style.less';
 
 export default () => {
@@ -85,22 +85,6 @@ export default () => {
                 }}
               >
                 成员管理
-              </div>
-              <div
-                className="color-primary pointer"
-                onClick={() => {
-                  dlgRef.current = Dialog.show({
-                    content: <ApproveDlg {...{ closeDlg, info: meta }} />,
-                    title: '审核配置',
-                    innerClassName: 'dialog-side add-approve-user-dlg',
-                    position: 'right',
-                  });
-                }}
-              >
-                审核配置
-              </div>
-              <div className="color-primary pointer" onClick={() => {}}>
-                机器配置
               </div>
               <div
                 className="color-primary pointer"
