@@ -46,6 +46,7 @@ export default (props) => {
                       setState({ stepVal: JSON.stringify(data) });
                     }
                     setState({ forceRender: {} });
+                    Message.success('已添加');
                   }}
                 />
               ),
@@ -108,6 +109,9 @@ export default (props) => {
               value: JSON.stringify(v.map((vv) => ({ username: vv.n, uid: vv.i }))),
               render: renderAddUser,
             });
+            v.forEach((vv) => {
+              addedUserId.push(vv.i);
+            });
           });
 
           setState({
@@ -123,7 +127,7 @@ export default (props) => {
   });
 
   return (
-    <>
+    <div className="add-approve-user-dlg">
       <div className="mb16">
         <Button
           onClick={() => {
@@ -174,6 +178,6 @@ export default (props) => {
         </Button>
       </div>
       <Steps layout="vertical" options={stepOptions} value={state.stepVal} />
-    </>
+    </div>
   );
 };
