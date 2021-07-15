@@ -16,3 +16,6 @@ export const getAppBranch = (data) => req({ url: `${prefix}/branch`, data });
 
 export const getAppCommit = (data) => req({ url: `${prefix}/commit`, data });
 
+export const getAppServer = (data) => req({ url: `${prefix}/getServer`, data });
+
+export const saveAppServer = (data) => req({ url: `${prefix}/saveServer`, method: 'post', data });
