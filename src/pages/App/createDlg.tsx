@@ -7,14 +7,14 @@ import './style.less';
 
 export default (props) => {
   const { closeDlg, getList, info = {}, save } = props;
-  const formRef: any = useRef();
+  let { current: formRef }: { current: any } = useRef();
 
   return (
     <Form
       className="create-dlg"
       defaultValue={info}
       getInstance={(i) => {
-        formRef.current = i;
+        formRef = i;
       }}
     >
       <Form.Item
@@ -37,7 +37,7 @@ export default (props) => {
         <Button
           className="mr16"
           onClick={() => {
-            const { values, errors } = formRef.current.getValues();
+            const { values, errors } = formRef.getValues();
             if (Object.keys(errors).length > 0) {
               Message.error(formUnpass);
               return;
