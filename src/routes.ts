@@ -5,6 +5,7 @@ import Layout from '@/components/layout';
 // 直接加载
 import Login from '@/pages/Login';
 import AppList from '@/pages/App';
+import Approve from '@/pages/Approve';
 import PublishList from '@/pages/Publish';
 import BuildDetail from '@/pages/Publish/BuildDetail';
 import LogList from '@/pages/Log/List';
@@ -16,16 +17,20 @@ import LogScript from '@/pages/Log/Script';
 
 export default [
   {
-    path: '/login',
-    component: Login,
-  },
-  {
-    path: '/',
+    path: '/page/',
     component: Layout,
     children: [
       {
+        path: 'login',
+        component: Login,
+      },
+      {
         path: 'appList',
         component: AppList,
+      },
+      {
+        path: 'approve',
+        component: Approve,
       },
       {
         path: 'publishList',
