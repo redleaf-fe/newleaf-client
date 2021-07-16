@@ -8,7 +8,10 @@ import usePageTable from '@/hooks/usePageTable';
 import dayjs from 'dayjs';
 import cls from 'classnames';
 
+import ApproveDlg from '../Dialogs/approveDlg';
 import CreateDlg from './createDlg';
+import ServerDlg from './serverDlg';
+
 import './style.less';
 
 const publishMap = {
@@ -68,15 +71,15 @@ function Publish(props) {
       });
   }, [setFetchQuery, setAppList]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      fetchMethod(fetchQuery);
-    }, 2000);
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     fetchMethod(fetchQuery);
+  //   }, 2000);
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, [fetchMethod, fetchQuery]);
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, [fetchMethod, fetchQuery]);
 
   const getList = useCallback(
     (page) => {
@@ -169,47 +172,47 @@ function Publish(props) {
                     });
                   }}
                 >
-                  <a
-                    className="text-deco-none color-primary"
-                    href={`#/buildDetail?id=${meta.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    打包
-                  </a>
+                  打包
                 </div>
               )}
-              {['done', 'fail'].includes(meta.buildStatus) && (
+              {['doing', 'done', 'fail'].includes(meta.buildStatus) && (
                 <a
                   className="block text-deco-none color-primary"
-                  href={`#/buildDetail?id=${meta.id}`}
+                  href={`/page/buildDetail?id=${meta.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   打包日志
                 </a>
               )}
-              {env === 'prod' && (
-                <div className="color-primary pointer" onClick={() => {}}>
-                  审核
+              {approve && (
+                <div className="color-primary pointer">
+                  <a
+                    className="block text-deco-none color-primary"
+                    href={`/page/approve?id=${meta.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    审核
+                  </a>
                 </div>
               )}
               {['pending', 'fail'].includes(meta.status) && (
                 <div
+                  className="color-primary pointer"
                   onClick={() => {
-                    publish({ id: meta.id }).catch((e) => {
+                    publish({ id: meta.id, env }).catch((e) => {
                       Message.error(e.message);
                     });
                   }}
                 >
-                  <a
+                  发布
+                  {/* <a
                     className="text-deco-none color-primary"
-                    href="#/publishDetail"
+                    href="/page/publishDetail"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >
-                    发布
-                  </a>
+                  ></a> */}
                 </div>
               )}
             </>
@@ -217,13 +220,14 @@ function Publish(props) {
         },
       },
     ],
-    [env],
+    [env, approve],
   );
 
   return (
     <div className="publishlist-container">
       <div className="mb16">
         <Button
+          className="mr8"
           onClick={() => {
             dlgRef.current = Dialog.show({
               content: <CreateDlg {...{ closeDlg, getList, appList: appList.data, env }} />,
@@ -233,6 +237,47 @@ function Publish(props) {
         >
           新建发布
         </Button>
+        <Button
+          className="mr8"
+          onClick={() => {
+            dlgRef.current = Dialog.show({
+              content: <ServerDlg {...{ closeDlg, type: 'build' }} />,
+              title: '打包机器',
+              innerClassName: 'dialog-side',
+              position: 'right',
+            });
+          }}
+        >
+          打包机器
+        </Button>
+        <Button
+          className="mr8"
+          onClick={() => {
+            dlgRef.current = Dialog.show({
+              content: <ServerDlg {...{ closeDlg, type: 'publish', info: { appId: fetchQuery.appId, env } }} />,
+              title: '发布机器',
+              innerClassName: 'dialog-side',
+              position: 'right',
+            });
+          }}
+        >
+          发布机器
+        </Button>
+        {approve && (
+          <Button
+            className="color-primary pointer"
+            onClick={() => {
+              dlgRef.current = Dialog.show({
+                content: <ApproveDlg {...{ closeDlg, info: fetchQuery }} />,
+                title: '审核配置',
+                innerClassName: 'dialog-side',
+                position: 'right',
+              });
+            }}
+          >
+            审核配置
+          </Button>
+        )}
       </div>
       {/*  */}
       {appList.reqed && (
