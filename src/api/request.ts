@@ -29,7 +29,7 @@ export default function ({ url, method = 'get', data = {} }: { url: string; meth
     .catch((err) => {
       const res = err.response;
       if ([301, 302].includes(+res.status)) {
-        window.location.href = `/#${res.data.redirectUrl}`;
+        window.location.href = res.data.redirectUrl;
       } else {
         throw err.response.data;
       }
