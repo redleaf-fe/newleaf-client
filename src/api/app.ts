@@ -19,3 +19,6 @@ export const getAppCommit = (data) => req({ url: `${prefix}/commit`, data });
 export const getAppServer = (data) => req({ url: `${prefix}/getServer`, data });
 
 export const saveAppServer = (data) => req({ url: `${prefix}/saveServer`, method: 'post', data });
+
+export const deleteServer = (data) => req({ url: `${prefix}/deleteServer`, method: 'post', data });
+
