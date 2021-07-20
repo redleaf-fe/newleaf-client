@@ -9,6 +9,7 @@ import Approve from '@/pages/Approve';
 import PublishList from '@/pages/Publish';
 import BuildDetail from '@/pages/Publish/BuildDetail';
 import LogList from '@/pages/Log/List';
+import SourceMap from '@/pages/SourceMap';
 import NotFound from '@/pages/NotFound';
 // 懒加载
 // const Dashboard = lazy(() => import(/* webpackChunkName: "Dashboard" */ '@/pages/Dashboard'));
@@ -47,6 +48,10 @@ export default [
       {
         path: 'logScript',
         component: LogScript,
+      },
+      {
+        path: 'sourceMap',
+        component: SourceMap,
       },
       {
         path: 'dashboard',

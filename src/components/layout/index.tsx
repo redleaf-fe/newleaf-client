@@ -8,6 +8,7 @@ const menuData = [
   { value: '/page/dashboard', text: '大盘' },
   { value: '/page/appList', text: '应用管理' },
   { value: '/page/publishList', text: '发布管理' },
+  { value: '/page/sourceMap', text: '源码查询' },
   { value: '/page/logList', text: '日志列表' },
   { value: '/page/logScript', text: '日志脚本' },
 ];
