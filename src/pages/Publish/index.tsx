@@ -71,15 +71,15 @@ function Publish(props) {
       });
   }, [setFetchQuery, setAppList]);
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     fetchMethod(fetchQuery);
-  //   }, 2000);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      fetchMethod(fetchQuery);
+    }, 5000);
 
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, [fetchMethod, fetchQuery]);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [fetchMethod, fetchQuery]);
 
   const getList = useCallback(
     (page) => {
@@ -141,17 +141,17 @@ function Publish(props) {
       },
       {
         title: '发布结果',
-        columnKey: 'status',
+        columnKey: 'publishStatus',
         grow: 1,
         render({ meta }) {
           return (
             <div
               className={cls({
-                'color-danger': meta.status === 'fail',
-                'color-success': meta.status === 'done',
+                'color-danger': meta.publishStatus === 'fail',
+                'color-success': meta.publishStatus === 'done',
               })}
             >
-              {publishMap[meta.status]}
+              {publishMap[meta.publishStatus]}
             </div>
           );
         },
@@ -197,7 +197,7 @@ function Publish(props) {
                   </a>
                 </div>
               )}
-              {['pending', 'fail'].includes(meta.status) && (
+              {['pending', 'fail'].includes(meta.publishStatus) && (
                 <div
                   className="color-primary pointer"
                   onClick={() => {
@@ -207,12 +207,6 @@ function Publish(props) {
                   }}
                 >
                   发布
-                  {/* <a
-                    className="text-deco-none color-primary"
-                    href="/page/publishDetail"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  ></a> */}
                 </div>
               )}
             </>
@@ -225,83 +219,72 @@ function Publish(props) {
 
   return (
     <div className="publishlist-container">
-      <div className="mb16">
-        <Button
-          className="mr8"
-          onClick={() => {
-            dlgRef.current = Dialog.show({
-              content: <CreateDlg {...{ closeDlg, getList, appList: appList.data, env }} />,
-              title: '新建发布',
-            });
-          }}
-        >
-          新建发布
-        </Button>
-        <Button
-          className="mr8"
-          onClick={() => {
-            dlgRef.current = Dialog.show({
-              content: <ServerDlg {...{ closeDlg, type: 'build' }} />,
-              title: '打包机器',
-              innerClassName: 'dialog-side',
-              position: 'right',
-            });
-          }}
-        >
-          打包机器
-        </Button>
-        <Button
-          className="mr8"
-          onClick={() => {
-            dlgRef.current = Dialog.show({
-              content: <ServerDlg {...{ closeDlg, type: 'publish', info: { appId: fetchQuery.appId, env } }} />,
-              title: '发布机器',
-              innerClassName: 'dialog-side',
-              position: 'right',
-            });
-          }}
-        >
-          发布机器
-        </Button>
-        {approve && (
-          <Button
-            className="color-primary pointer"
-            onClick={() => {
-              dlgRef.current = Dialog.show({
-                content: <ApproveDlg {...{ closeDlg, info: fetchQuery }} />,
-                title: '审核配置',
-                innerClassName: 'dialog-side',
-                position: 'right',
-              });
-            }}
-          >
-            审核配置
-          </Button>
-        )}
-      </div>
       {/*  */}
       {appList.reqed && (
-        <Form
-          className="mb16"
-          layout="horizontal"
-          defaultValue={{ app: appList.data[0] ? [appList.data[0].value] : [] }}
-          getInstance={(i) => {
-            formRef.current = i;
-          }}
-        >
-          <Form.Item name="app" label="应用名称：">
-            <Select options={appList.data} />
-          </Form.Item>
-          <Button
-            className="ml16 vertical-align-middle"
-            onClick={() => {
-              const { values } = formRef.current.getValues();
-              setFetchQuery({ appId: JSON.parse(values.app[0]).appId, currentPage: 1 });
+        <>
+          <div className="mb16">
+            <Button
+              className="mr8"
+              onClick={() => {
+                dlgRef.current = Dialog.show({
+                  content: <CreateDlg {...{ closeDlg, getList, appList: appList.data, env }} />,
+                  title: '新建发布',
+                });
+              }}
+            >
+              新建发布
+            </Button>
+            <Button
+              className="mr8"
+              onClick={() => {
+                dlgRef.current = Dialog.show({
+                  content: <ServerDlg {...{ closeDlg, info: { appId: fetchQuery.appId, env } }} />,
+                  title: '发布机器',
+                  innerClassName: 'dialog-side',
+                  position: 'right',
+                });
+              }}
+            >
+              发布机器
+            </Button>
+            {approve && (
+              <Button
+                className="color-primary pointer"
+                onClick={() => {
+                  dlgRef.current = Dialog.show({
+                    content: <ApproveDlg {...{ closeDlg, info: fetchQuery }} />,
+                    title: '审核配置',
+                    innerClassName: 'dialog-side',
+                    position: 'right',
+                  });
+                }}
+              >
+                审核配置
+              </Button>
+            )}
+          </div>
+          <Form
+            className="mb16"
+            layout="horizontal"
+            defaultValue={{ app: appList.data[0] ? [appList.data[0].value] : [] }}
+            getInstance={(i) => {
+              formRef.current = i;
+            }}
+            onValuesChange={({ value, name }) => {
+              switch (name) {
+                case 'app':
+                  setFetchQuery({ appId: JSON.parse(value[0]).appId, currentPage: 1 });
+                  break;
+                default:
+                  break;
+              }
             }}
           >
-            搜索
-          </Button>
-        </Form>
+            <Form.Item name="app" label="应用名称：">
+              <Select options={appList.data} />
+            </Form.Item>
+          </Form>
+        </>
       )}
       {/*  */}
       <Table columns={columns} datasets={pageData.data} />
