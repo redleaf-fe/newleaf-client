@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Message } from 'redleaf-rc';
 import { useSafeState, useMount } from 'redleaf-rc/dist/utils/hooks';
-import { publishDetail } from '@/api/publish';
+import { buildLog } from '@/api/publish';
 import { getSearchParams } from 'ice';
 
 import './style.less';
@@ -14,7 +14,7 @@ export default function Detail(props) {
   });
 
   useMount(() => {
-    publishDetail({ id: searchParams.id })
+    buildLog({ id: searchParams.id })
       .then((res) => {
         setState({ log: res });
       })
@@ -25,18 +25,22 @@ export default function Detail(props) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      publishDetail({ id: searchParams.id })
+      buildLog({ id: searchParams.id })
         .then((res) => {
           setState({ log: res });
         })
         .catch((e) => {
           Message.error(e.message);
         });
-    }, 2000);
+    }, 5000);
     return () => {
       clearInterval(timer);
     };
   }, [searchParams, setState]);
 
-  return <pre>{state.log || '内容为空'}</pre>;
+  return (
+    <>
+      <pre>{state.log || '内容为空'}</pre>
+    </>
+  );
 }
