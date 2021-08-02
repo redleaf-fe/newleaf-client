@@ -11,3 +11,6 @@ export const buildLog = (data) => req({ url: `${prefix}/buildLog`, data });
 export const build = (data) => req({ url: `${prefix}/build`, method: 'post', data });
 
 export const publish = (data) => req({ url: `${prefix}/publish`, method: 'post', data });
+
+export const publishDetail = (data) => req({ url: `${prefix}/publishDetail`, method: 'get', data });
+
