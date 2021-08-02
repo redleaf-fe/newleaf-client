@@ -11,6 +11,7 @@ import cls from 'classnames';
 import ApproveDlg from '../Dialogs/approveDlg';
 import CreateDlg from './createDlg';
 import ServerDlg from './serverDlg';
+import PublishDetailDlg from './publishDetailDlg';
 
 import './style.less';
 
@@ -73,7 +74,7 @@ function Publish(props) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      fetchMethod(fetchQuery);
+      // fetchMethod(fetchQuery);
     }, 5000);
 
     return () => {
@@ -207,6 +208,19 @@ function Publish(props) {
                   }}
                 >
                   发布
+                </div>
+              )}
+              {['doing', 'done', 'fail'].includes(meta.publishStatus) && (
+                <div
+                  className="color-primary pointer"
+                  onClick={() => {
+                    dlgRef.current = Dialog.show({
+                      content: <PublishDetailDlg {...{ closeDlg, id: meta.id }} />,
+                      title: '发布详情',
+                    });
+                  }}
+                >
+                  发布详情
                 </div>
               )}
             </>
