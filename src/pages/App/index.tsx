@@ -46,6 +46,11 @@ export default () => {
         grow: 1,
       },
       {
+        title: '应用ID',
+        columnKey: 'appId',
+        grow: 1,
+      },
+      {
         title: '更新时间',
         columnKey: 'updatedAt',
         grow: 1,
