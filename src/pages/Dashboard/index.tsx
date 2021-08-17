@@ -62,9 +62,24 @@ export default () => {
 
         const qpsData = xData.map((v) => res[v].reqNum || 0);
         const rtData = xData.map((v) => Math.ceil(res[v].reqTime / res[v].reqNum) || 0);
-        // setState({ avg: yData.reduce((prev, curr) => prev + curr) / yData.length });
+        const cpuData = xData.map((v) => {
+          return (
+            ((res[v].cpuInfo || []).reduce((sum, uu) => {
+              const { idle, irq, user, sys } = uu.times;
+              return +sum + (+irq + +user + +sys) / (+idle + +irq + +user + +sys);
+            }, 0) /
+              (res[v].cpuInfo || []).length.toFixed(2)) *
+            100
+          );
+        });
+        const memData = xData.map((v) => {
+          const { freemem = 0, totalmem = 0 } = res[v].memInfo || {};
+          return +((totalmem - freemem) / totalmem).toFixed(2) * 100;
+        });
         chartRef_QPS?.current?.setOption(genOption(xData, qpsData, '每分钟请求数'));
         chartRef_RT?.current?.setOption(genOption(xData, rtData, 'RT'));
+        chartRef_CPU?.current?.setOption(genOption(xData, cpuData, 'CPU'));
+        chartRef_MEM?.current?.setOption(genOption(xData, memData, '内存'));
       })
       .catch((e) => {
         Message.error(e);
