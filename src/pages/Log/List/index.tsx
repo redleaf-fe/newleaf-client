@@ -69,7 +69,7 @@ export default () => {
             data: res.map((v) => ({ value: String(v.appId), text: v.appName })),
             reqed: true,
           });
-          setFetchQuery({ appId: res[0].id });
+          setFetchQuery({ appId: res[0].appId });
         }
       })
       .catch((e) => {
