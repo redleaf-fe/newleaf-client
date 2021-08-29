@@ -74,7 +74,7 @@ export default () => {
         });
         const memData = xData.map((v) => {
           const { freemem = 0, totalmem = 0 } = res[v].memInfo || {};
-          return +((totalmem - freemem) / totalmem).toFixed(2) * 100;
+          return +((freemem) / totalmem).toFixed(2) * 100;
         });
         chartRef_QPS?.current?.setOption(genOption(xData, qpsData, '每分钟请求数'));
         chartRef_RT?.current?.setOption(genOption(xData, rtData, 'RT'));
